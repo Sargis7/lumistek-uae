@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="lang-ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lumistek UAE — premium paint protection film (PPF) from South Korea. Offices in Dubai, Abu Dhabi, Sharjah and Ajman." data-i18n-content="meta.description">
+    <title data-i18n="meta.title">Lumistek - أفلام حماية طلاء السيارات الفاخرة (PPF)</title>
+    
+    <!-- Подключение премиального арабского шрифта Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            cyan: '#1cb0c6',   
+                            blue: '#1b75bc',   
+                            pink: '#f2668b',   
+                            dark: '#111111',
+                            darker: '#0a0a0a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        body { font-family: 'Cairo', sans-serif; }
+        
+        .btn-hover-effect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(28, 176, 198, 0.5);
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        /* Анимация для слайдера */
+        .slider-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Плавный подъем карточек при наведении */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Стили для скроллбара (Адаптация под RTL: скроллбар слева в RTL браузерах) */
+        .desc-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .desc-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .desc-scroll::-webkit-scrollbar-thumb {
+            background: rgba(28, 176, 198, 0.5);
+            border-radius: 4px;
+        }
+        
+        /* Скрытый скроллбар для горизонтальной галереи */
+        .hide-scroll-bar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .hide-scroll-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ==========================================================
+           ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА  AR | EN
+           ========================================================== */
+        .lang-switcher {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            direction: ltr;              /* AR всегда слева, EN справа */
+            flex-shrink: 0;
+            vertical-align: middle;
+        }
+        .lang-switcher--lg { padding: 4px; }
+        .lang-switcher__btn {
+            padding: 4px 11px;
+            border-radius: 9999px;
+            font-size: 12px;
+            line-height: 1.15;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .lang-switcher--lg .lang-switcher__btn { padding: 6px 18px; font-size: 14px; }
+        .lang-switcher__btn:hover { color: #ffffff; }
+        /* Активный сегмент: заливка brand-cyan, белый текст */
+        .lang-switcher__btn.is-active {
+            background-color: #1cb0c6 !important;
+            color: #ffffff !important;
+        }
+
+        /* ==========================================================
+           RTL -> LTR
+           Ниже срабатывает ТОЛЬКО с классом lang-en на <html>.
+           В исходной разметке часть Tailwind-классов была зашита под RTL
+           (space-x-reverse, mr-, pl-, left-4, text-right). Здесь мы их
+           зеркалим, чтобы английская версия читалась слева направо.
+           ========================================================== */
+
+        /* space-x + space-x-reverse: в LTR отступ должен идти слева.
+           !important нужен, чтобы перебить утилиты Tailwind CDN. */
+        html.lang-en .ltr-space-x > :not([hidden]) ~ :not([hidden]) {
+            margin-right: 0 !important;
+            margin-left: 1.5rem !important;
+        }
+        html.lang-en .ltr-space-x-lg > :not([hidden]) ~ :not([hidden]) {
+            margin-left: 2rem !important;
+        }
+        @media (min-width: 640px) {
+            html.lang-en .ltr-space-x-sm > :not([hidden]) ~ :not([hidden]) {
+                margin-right: 0 !important;
+                margin-left: 1rem !important;
+            }
+        }
+
+        /* Зеркалим отступы, зашитые под RTL */
+        html.lang-en .ltr-mr-1 { margin-right: 0 !important; margin-left: 0.25rem; }
+        html.lang-en .ltr-ml-2 { margin-left: 0 !important;  margin-right: 0.5rem; }
+        html.lang-en .ltr-pl-2 { padding-left: 0 !important; padding-right: 0.5rem; }
+        html.lang-en .ltr-pl-4 { padding-left: 0 !important; padding-right: 1rem; }
+        html.lang-en .ltr-pl-8 { padding-left: 0 !important; padding-right: 2rem; }
+
+        /* Кнопки закрытия модалок: в RTL стояли left-4, в LTR — справа */
+        html.lang-en .close-btn {
+            left: auto !important;
+            right: 1rem !important;
+        }
+
+        /* Текстовое выравнивание, зашитое под RTL */
+        html.lang-en .ltr-text-end {
+            text-align: left !important;
+        }
+
+        /* Стрелка-подсказка в галерее смотрит в другую сторону */
+        html.lang-en .gallery-swipe-hint > span:last-child {
+            display: inline-block;
+            transform: scaleX(-1);
+        }
+
+        /* Мягкое затухание при смене языка */
+        .i18n { transition: opacity 0.12s ease; }
+    </style>
+
+    <!-- Языковой словарь и переключатель. Подключены в <head>, чтобы
+         применить сохранённый язык до отрисовки страницы. -->
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/lang.js"></script>
+</head>
+<body class="bg-brand-darker text-white antialiased overflow-x-hidden">
+
+    <nav class="fixed w-full z-40 bg-brand-darker/90 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <img src="logo.png?v=2" alt="LUMISTEK" class="h-10 md:h-12 w-auto object-contain">
+                </div>
+                
+                <div class="hidden md:flex ltr-space-x ltr-space-x-sm ltr-space-x-lg space-x-6 space-x-reverse lg:space-x-8 lg:space-x-reverse">
+                    <a href="#about" class="text-sm lg:text-base text-gray-300 hover:text-white transition-colors" data-i18n="nav.about">عن الشركة</a>
+                    <a href="#products" class="text-sm lg:text-base text-gray-300 hover:text-white transition-colors" data-i18n="nav.products">المنتجات</a>
+                    <a href="#gallery" class="text-sm lg:text-base text-gray-300 hover:text-white transition-colors" data-i18n="nav.gallery">أعمال شركائنا</a>
+                    <a href="#contacts" class="text-sm lg:text-base text-gray-300 hover:text-white transition-colors" data-i18n="nav.contacts">اتصل بنا</a>
+                </div>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <a href="tel:+79917184442" dir="ltr" class="border border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-white px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap">
+                        +7 (991) 718-44-42
+                    </a>
+                    <div class="lang-switcher" role="group" aria-label="Language" data-i18n-aria="lang.groupAria">
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="ar" data-i18n-aria="lang.arAria" aria-label="العربية" aria-pressed="true">AR</button>
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="en" data-i18n-aria="lang.enAria" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center gap-1.5">
+                    <div class="lang-switcher" role="group" aria-label="Language" data-i18n-aria="lang.groupAria">
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="ar" data-i18n-aria="lang.arAria" aria-label="العربية" aria-pressed="true">AR</button>
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="en" data-i18n-aria="lang.enAria" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none p-2" data-i18n-aria="nav.menuAria" aria-label="القائمة">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menu-icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Мобильное меню -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-darker border-b border-white/10 absolute w-full shadow-2xl">
+            <div class="px-4 pt-2 pb-6 space-y-3">
+                <a href="#about" class="block px-3 py-3 text-lg font-bold text-gray-300 hover:text-white hover:bg-white/5 rounded-md" data-i18n="nav.about">عن الشركة</a>
+                <a href="#products" class="block px-3 py-3 text-lg font-bold text-gray-300 hover:text-white hover:bg-white/5 rounded-md" data-i18n="nav.products">المنتجات</a>
+                <a href="#gallery" class="block px-3 py-3 text-lg font-bold text-gray-300 hover:text-white hover:bg-white/5 rounded-md" data-i18n="nav.gallery">أعمال شركائنا</a>
+                <a href="#contacts" class="block px-3 py-3 text-lg font-bold text-gray-300 hover:text-white hover:bg-white/5 rounded-md" data-i18n="nav.contacts">اتصل بنا</a>
+                <a href="tel:+79917184442" dir="ltr" class="block mt-6 text-center border-2 border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-white px-6 py-3 rounded-xl font-bold transition-all">
+                    +7 (991) 718-44-42
+                </a>
+                <div class="flex justify-center pt-3">
+                    <div class="lang-switcher lang-switcher--lg" role="group" aria-label="Language" data-i18n-aria="lang.groupAria">
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="ar" data-i18n-aria="lang.arAria" aria-label="العربية" aria-pressed="true">AR</button>
+                        <button type="button" class="lang-switcher__btn" data-lang-btn="en" data-i18n-aria="lang.enAria" aria-label="English" aria-pressed="false">EN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-brand-darker">
+        <!-- ФОНОВОЕ ВИДЕО -->
+        <div class="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
+            <div id="hero-fallback" class="absolute inset-0 bg-brand-darker" aria-hidden="true"></div>
+            <video class="absolute inset-0 w-full h-full object-cover scale-[1.05]" autoplay loop muted playsinline preload="auto" poster="hero-poster.jpg">
+                <source src="bg-video.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="absolute inset-0 bg-black/60 z-10"></div>
+
+        <div class="relative z-20 px-4 max-w-7xl mx-auto w-full flex flex-col justify-center items-center h-full pb-10">
+            <div class="max-w-full text-center mt-16 md:mt-0">
+                <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold mb-4 md:mb-6 tracking-tight leading-tight text-white uppercase">
+                    LUMISTEK
+                </h1>
+                <p class="text-sm sm:text-base md:text-lg text-gray-300 mb-8 md:mb-10 mx-auto max-w-[280px] sm:max-w-md md:max-w-2xl font-semibold" data-i18n="hero.subtitle">
+                    حماية موثوقة لهيكل السيارة من الخدوش، الحصى، والمواد الكيميائية. صُنع في كوريا الجنوبية باستخدام أحدث التقنيات العالمية.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 sm:space-x-reverse ltr-space-x ltr-space-x-sm w-full px-4 sm:px-0">
+                    <a href="#products" class="bg-brand-cyan hover:bg-brand-cyan/80 text-white px-6 py-4 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg btn-hover-effect w-full sm:w-auto text-center transition-all" data-i18n="hero.ctaProducts">
+                        تصفح المنتجات
+                    </a>
+                    <a href="javascript:void(0)" onclick="openModal()" class="text-white border-2 border-white/20 hover:border-white px-6 py-4 md:px-8 md:py-4 rounded-full font-bold text-base md:text-lg w-full sm:w-auto text-center transition-all bg-black/30 backdrop-blur-sm" data-i18n="hero.ctaBook">
+                        احجز الآن
+                    </a>
+                </div>
+                
+                <!-- Соцсети на главном экране -->
+                <div class="flex justify-center space-x-6 space-x-reverse ltr-space-x mt-12 animate-fade-in-up">
+                    <a href="https://t.me/LumistekRussia" target="_blank" class="w-14 h-14 rounded-full bg-white/5 border border-white/20 flex items-center justify-center text-gray-300 hover:bg-[#229ED9] hover:text-white hover:border-[#229ED9] hover:scale-110 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(34,158,217,0.4)] backdrop-blur-sm" aria-label="Telegram">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a5.96 5.96 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.892-.662 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    </a>
+                    <a href="https://youtube.com/@lumistekrussia?si=4xbQfSnspB-GbLBg" target="_blank" class="w-14 h-14 rounded-full bg-white/5 border border-white/20 flex items-center justify-center text-gray-300 hover:bg-[#FF0000] hover:text-white hover:border-[#FF0000] hover:scale-110 transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.05)] hover:shadow-[0_0_20px_rgba(255,0,0,0.4)] backdrop-blur-sm" aria-label="YouTube">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce hidden md:block">
+            <svg class="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </section>
+
+    <section id="about" class="py-16 md:py-24 bg-brand-dark overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-white" data-i18n="about.title">عن الشركة</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-brand-pink via-brand-cyan to-brand-blue mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-400 max-w-2xl mx-auto font-semibold" data-i18n="about.subtitle">تقنيات مبتكرة وشراكات موثوقة لأعمالك وحماية سيارتك.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <!-- Карточка 1 -->
+                <div class="card-hover bg-brand-darker p-8 rounded-2xl border border-white/5 text-center shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-brand-pink/10 rounded-xl flex items-center justify-center mx-auto mb-6 border border-brand-pink/20 shadow-[0_0_15px_rgba(242,102,139,0.2)]">
+                        <svg class="w-8 h-8 text-brand-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white" data-i18n="about.c1.title">مراقبة الجودة</h3>
+                    <p class="text-gray-400 text-sm md:text-base flex-grow leading-relaxed" data-i18n="about.c1.text">نضمن مطابقة المنتجات لأعلى المعايير العالمية. يتم إجراء فحص متعدد المراحل في مصانعنا في كوريا لضمان خلو كل لفة من العيوب وتوفير شفافية وسماكة مثالية.</p>
+                </div>
+
+                <!-- Карточка 2 -->
+                <div class="card-hover bg-brand-darker p-8 rounded-2xl border border-white/5 text-center shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-brand-cyan/10 rounded-xl flex items-center justify-center mx-auto mb-6 border border-brand-cyan/20 shadow-[0_0_15px_rgba(28,176,198,0.2)]">
+                        <svg class="w-8 h-8 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white" data-i18n="about.c2.title">شروط مرنة</h3>
+                    <p class="text-gray-400 text-sm md:text-base flex-grow leading-relaxed" data-i18n="about.c2.text">نهج مخصص لكل شريك. نقدم شروط تعاون مربحة لكل من استوديوهات العناية بالسيارات الصغيرة (Detailing) والموزعين الكبار في المنطقة.</p>
+                </div>
+
+                <!-- Карточка 3 -->
+                <div class="card-hover bg-brand-darker p-8 rounded-2xl border border-white/5 text-center shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-brand-blue/10 rounded-xl flex items-center justify-center mx-auto mb-6 border border-brand-blue/20 shadow-[0_0_15px_rgba(27,117,188,0.2)]">
+                        <svg class="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white" data-i18n="about.c3.title">الخدمات اللوجستية</h3>
+                    <p class="text-gray-400 text-sm md:text-base flex-grow leading-relaxed" data-i18n="about.c3.text">إمدادات مستمرة وبرنامج مستودعات موثوق. شحن سريع للمنتجات عبر فروعنا في دبي، أبوظبي، والشارقة لتلبية احتياجات السوق بشكل فوري.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 mt-6 md:mt-8 max-w-4xl mx-auto">
+                <!-- Карточка 4 -->
+                <div class="card-hover bg-brand-darker p-8 rounded-2xl border border-white/5 text-center shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-brand-cyan/20 rounded-xl flex items-center justify-center mx-auto mb-6 border border-brand-cyan/30 shadow-[0_0_15px_rgba(28,176,198,0.2)]">
+                        <svg class="w-8 h-8 text-brand-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white" data-i18n="about.c4.title">الدعم التسويقي والإعلاني</h3>
+                    <p class="text-gray-400 text-sm md:text-base flex-grow leading-relaxed" data-i18n="about.c4.text">نزود شركاءنا بالمواد الإعلانية، الكتالوجات، والعينات. نساعد في الترويج للمنتج وجذب عملاء جدد في منطقتك بكل احترافية.</p>
+                </div>
+
+                <!-- Карточка 5 -->
+                <div class="card-hover bg-brand-darker p-8 rounded-2xl border border-white/5 text-center shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-brand-blue/20 rounded-xl flex items-center justify-center mx-auto mb-6 border border-brand-blue/30 shadow-[0_0_15px_rgba(27,117,188,0.2)]">
+                        <svg class="w-8 h-8 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white" data-i18n="about.c5.title">تطوير ودعم على مدار الساعة</h3>
+                    <p class="text-gray-400 text-sm md:text-base flex-grow leading-relaxed" data-i18n="about.c5.text">نحن دائماً على اتصال لحل أي مشاكل فنية أو تجارية بسرعة. نقوم بتنظيم ورش عمل وفعاليات تدريبية لإبقائك على اطلاع بأحدث التطورات.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="products" class="py-16 md:py-24 bg-brand-darker overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-white" data-i18n="products.title">كتالوج Lumistek</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-brand-pink via-brand-cyan to-brand-blue mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-400 max-w-2xl mx-auto font-semibold" data-i18n-html="products.subtitle">اختر الحماية المثلى لسيارتك. <br class="hidden md:block"/>اسحب للجانب لتصفح مجموعة منتجاتنا.</p>
+            </div>
+            
+            <div class="relative w-full max-w-lg mx-auto md:max-w-4xl h-[580px] md:h-[650px] perspective-1000 touch-pan-y" id="catalog-slider">
+                
+                <!-- Стрелки (RTL логика: Previous = вправо, Next = влево) -->
+                <button class="hidden md:flex absolute top-1/2 -right-16 transform -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-prev" id="slider-prev" aria-label="السابق" data-i18n-aria="products.prevAria">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                <button class="hidden md:flex absolute top-1/2 -left-16 transform -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-next" id="slider-next" aria-label="التالي" data-i18n-aria="products.nextAria">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+
+                <!-- Товар 1 -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-20 opacity-100 translate-x-0 scale-100 pb-12" data-index="0">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-1.jpg" alt="Lumistek Clear PPF" data-i18n-alt="p1.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p1.name">Lumistek Clear PPF</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p1.type">طبقة حماية لامعة</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p1.desc">فيلم بولي يوريثان كلاسيكي شفاف بسماكة 190 ميكرون. يوفر أقصى درجات اللمعان، خاصية طرد الماء (الهيدروفوبيك)، وحماية غير مرئية لهيكل السيارة.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p1.rollPrice">حسب الطلب</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p1.meterPrice">حسب الطلب</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 2: WINDSHIELD PROTECTION -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="1">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-2.jpg" alt="Lumistek WINDSHIELD PROTECTION" data-i18n-alt="p2.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p2.name">Lumistek WINDSHIELD</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p2.type">حماية الزجاج الأمامي</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p2.desc">فيلم بولي يوريثان شفاف مصمم خصيصاً للزجاج الأمامي. يُعد أحدث الحلول المبتكرة لحماية الزجاج من الحصى المتطاير، الخدوش، والتشققات بكفاءة عالية.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p2.rollPrice">4,200 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p2.meterPrice">280 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 3: CLEAR PRO -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="2">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-3.jpg" alt="Lumistek CLEAR PRO" data-i18n-alt="p3.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p3.name">Lumistek CLEAR PRO</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p3.type">طبقة TOP COAT صلبة</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p3.desc">يتميز Clear Pro بوجود طبقة سيراميك علوية (Top Coat) تجعله مقاوماً لأقسى العوامل الخارجية. مثالي للسيارات ذات الألوان الفاتحة وللبلدان ذات المناخ الحار والقاسي مثل الخليج.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p3.rollPrice">2,550 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p3.meterPrice">180 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 4: MATE PROTECTION -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="3">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-4.jpg" alt="Lumistek MATE PROTECTION" data-i18n-alt="p4.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p4.name">Lumistek MATTE</h3>
+                                <p class="text-brand-pink text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p4.type">حماية مطفية (مات ساتان)</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p4.desc">فيلم حماية لامع ومطفي في نفس الوقت. يحافظ على لون السيارة الأصلي مع منحه مظهراً ساتانياً أنيقاً وجذاباً. خيار مثالي لعشاق التميز والسيارات الفاخرة.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p4.rollPrice">3,000 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p4.meterPrice">210 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 5: CLEAR ULTRA PRO -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="4">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-5.jpg" alt="Lumistek CLEAR ULTRA PRO" data-i18n-alt="p5.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p5.name">Lumistek ULTRA PRO</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p5.type">طبقة TOP COAT لينة 215 ميكرون</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p5.desc">عندما لا تكفي سماكة 190 ميكرون، نقدم لك "الدرع المعزز". فيلم بسماكة 215 ميكرون (بدون بطانة) مصمم لتوفير حماية قصوى ضد الصدمات القوية والحصى على الطرق السريعة.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p5.rollPrice">3,150 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p5.meterPrice">210 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 6: ULTRA PRO ONE -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="5">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-6.jpg" alt="Lumistek ULTRA PRO ONE" data-i18n-alt="p6.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p6.name">Lumistek ULTRA ONE</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p6.type">طبقة صلبة 215 ميكرون</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p6.desc">السماكة (215 ميكرون) مدمجة مع طبقة علوية صلبة (Top Coat). توفر حماية غير قابلة للاختراق ضد المواد الكيميائية والأمطار الحمضية، ولن تصفر بمرور الوقت في مناخ دبي القاسي.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p6.rollPrice">3,550 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p6.meterPrice">240 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 7: MHP PLUS 5 -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="6">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-7.jpg" alt="Lumistek MHP PLUS 5" data-i18n-alt="p7.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p7.name">Lumistek MHP PLUS 5</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p7.type">فيلم تظليل وعزل حراري (5%)</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p7.desc">فيلم معدني يتميز بقدرة عالية على حجب الأشعة تحت الحمراء وفوق البنفسجية، مما يحمي المقصورة من البهتان والحرارة الزائدة. نسبة نفاذية الضوء 5% (داكن جداً) لخصوصية تامة.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p7.rollPrice">650 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p7.meterPrice">25 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 8: MHP PLUS 15 -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="7">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-8.jpg" alt="Lumistek MHP PLUS 15" data-i18n-alt="p8.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p8.name">Lumistek MHP PLUS 15</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p8.type">فيلم تظليل وعزل حراري (15%)</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p8.desc">فيلم معدني يتميز بقدرة عالية على حجب الأشعة تحت الحمراء وفوق البنفسجية، مما يحمي المقصورة من البهتان والحرارة الزائدة. نسبة نفاذية الضوء 15% لمظهر أنيق ورؤية واضحة.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p8.rollPrice">650 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p8.meterPrice">25 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 9: MHP PLUS 35 -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="8">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-9.jpg" alt="Lumistek MHP PLUS 35" data-i18n-alt="p9.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p9.name">Lumistek MHP PLUS 35</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p9.type">فيلم تظليل وعزل حراري (35%)</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p9.desc">فيلم معدني يتميز بقدرة عالية على حجب الأشعة تحت الحمراء وفوق البنفسجية، مما يحمي المقصورة من البهتان والحرارة الزائدة. نسبة نفاذية الضوء 35% مثالية للزجاج الأمامي والجانبي وفقاً لقوانين المرور.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p9.rollPrice">650 د.إ</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p9.meterPrice">25 د.إ</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+
+                <!-- Товар 10: HEAD LIGHTS PROTECT -->
+                <div class="slider-card absolute inset-0 w-full h-full bg-brand-dark rounded-2xl border border-white/10 overflow-hidden shadow-2xl z-10 opacity-0 -translate-x-full scale-95 pb-12" data-index="9">
+                    <div class="h-1/2 bg-brand-darker relative overflow-hidden flex items-center justify-center">
+                        <img src="product-10.jpg" alt="Lumistek HEAD LIGHTS PROTECT" data-i18n-alt="p10.alt" class="w-full h-full object-contain z-0 py-4">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-dark z-10 pointer-events-none"></div>
+                    </div>
+                    <div class="p-6 md:p-8 h-1/2 flex flex-col justify-between relative z-20 bg-brand-dark">
+                        <div class="flex-grow flex flex-col min-h-0">
+                            <div class="mb-2 shrink-0">
+                                <h3 class="text-2xl md:text-3xl font-extrabold text-white mb-1" data-i18n="p10.name">Lumistek HEADLIGHTS</h3>
+                                <p class="text-brand-cyan text-xs md:text-sm font-bold uppercase tracking-wider" data-i18n="p10.type">حماية وتصميم المصابيح</p>
+                            </div>
+                            <div class="overflow-y-auto desc-scroll pl-2 ltr-pl-2 flex-grow">
+                                <p class="text-gray-400 text-sm md:text-base leading-relaxed" data-i18n="p10.desc">فيلم بولي يوريثان بلون بني فاتح (سموكي) مخصص لحماية وتغيير مظهر المصابيح الأمامية والخلفية. يحمي من الاصفرار والخدوش مع إضافة لمسة رياضية لسيارتك.</p>
+                            </div>
+                            <div class="shrink-0 mt-3 border-t border-white/10 pt-3 flex flex-col justify-end">
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.rollLabel">سعر اللفة (1.52x15م)</span>: <span data-i18n="p10.rollPrice">حسب الطلب</span></p>
+                                <p class="text-brand-cyan font-semibold text-xs md:text-sm uppercase tracking-wider"><span data-i18n="price.meterLabel">سعر المتر</span>: <span data-i18n="p10.meterPrice">حسب الطلب</span></p>
+                            </div>
+                        </div>
+                        <button onclick="openModal()" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-3 md:py-4 rounded-xl font-bold transition-colors mt-4 shrink-0" data-i18n="products.cta">احصل على السعر</button>
+                    </div>
+                </div>
+                
+                <!-- Точки навигации -->
+                <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-2 space-x-reverse z-30 px-4 overflow-x-auto">
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-brand-cyan opacity-100 transition-opacity flex-shrink-0" data-index="0"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="1"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="2"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="3"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="4"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="5"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="6"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="7"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="8"></button>
+                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="9"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery" class="py-16 md:py-24 bg-brand-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 md:mb-16">
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-white" data-i18n="gallery.title">أعمال شركائنا</h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-brand-pink via-brand-cyan to-brand-blue mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-400 max-w-2xl mx-auto font-semibold" data-i18n="gallery.subtitle">قيم جودة ولمعان منتجاتنا على أرض الواقع.</p>
+            </div>
+            
+            <div id="gallery-track" class="flex overflow-x-auto gap-4 md:gap-6 pb-8 hide-scroll-bar snap-x snap-mandatory gallery-track" dir="rtl">
+                <div class="flex-none w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] aspect-[4/5] bg-brand-darker rounded-2xl overflow-hidden border border-white/10 snap-center">
+                    <img src="gallery-1.jpg" alt="أعمال شركائنا" data-i18n-alt="gallery.alt" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-none w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] aspect-[4/5] bg-brand-darker rounded-2xl overflow-hidden border border-white/10 snap-center">
+                    <img src="gallery-2.jpg" alt="أعمال شركائنا" data-i18n-alt="gallery.alt" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-none w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] aspect-[4/5] bg-brand-darker rounded-2xl overflow-hidden border border-white/10 snap-center">
+                    <img src="gallery-3.jpg" alt="أعمال شركائنا" data-i18n-alt="gallery.alt" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-none w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] aspect-[4/5] bg-brand-darker rounded-2xl overflow-hidden border border-white/10 snap-center">
+                    <img src="gallery-4.jpg" alt="أعمال شركائنا" data-i18n-alt="gallery.alt" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-none w-[80vw] sm:w-[60vw] md:w-[40vw] lg:w-[30vw] aspect-[4/5] bg-brand-darker rounded-2xl overflow-hidden border border-white/10 snap-center">
+                    <img src="gallery-5.jpg" alt="أعمال شركائنا" data-i18n-alt="gallery.alt" class="w-full h-full object-cover">
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-sm text-gray-500 font-semibold gallery-swipe-hint"><span data-i18n="gallery.swipeHint">اسحب لرؤية المزيد</span> <span class="md:hidden" data-i18n="gallery.arrow">👈</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="partners" class="py-12 bg-brand-darker border-t border-white/10 hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-white" data-i18n="partners.title">شركاؤنا في النجاح</h3>
+            </div>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                <!-- Вставьте логотипы партнеров здесь (partner-1.png и т.д.) -->
+                <p class="text-gray-500 italic" data-i18n="partners.placeholder">سيتم إضافة شعارات شركائنا هنا</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contacts" class="bg-brand-darker border-t border-white/10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-12">
+                <!-- Логотип -->
+                <div class="col-span-1 lg:col-span-4 text-center lg:text-right ltr-text-end">
+                    <div class="flex items-center justify-center lg:justify-start mb-6">
+                        <img src="logo.png?v=2" alt="LUMISTEK" class="h-10 w-auto object-contain">
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md mx-auto lg:mx-0 text-sm md:text-base font-semibold" data-i18n="footer.about">
+                        لوميستيك (Lumistek) هي الحل الأمثل في مجال أفلام الحماية من البولي يوريثان. نقدم منتجاً فائق الجودة صُنع في كوريا الجنوبية، ليضمن لسيارتك حماية تدوم طويلاً.
+                    </p>
+                    <a href="tel:+79917184442" dir="ltr" class="text-2xl font-extrabold text-white hover:text-brand-cyan transition-colors inline-block mb-4">
+                        +7 (991) 718-44-42
+                    </a>
+                </div>
+
+                <!-- Филиалы -->
+                <div class="col-span-1 lg:col-span-8">
+                    <h4 class="text-xl font-bold mb-8 text-white text-center lg:text-right ltr-text-end" data-i18n="footer.offices">مكاتبنا التمثيلية</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-right">
+                        <!-- دبي -->
+                        <div>
+                            <div class="flex items-center justify-center sm:justify-start mb-2">
+                                <svg class="w-5 h-5 text-brand-cyan ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <h5 class="text-white font-bold text-lg" data-i18n="footer.dubai">دبي</h5>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-3" data-i18n-html="footer.dubaiAddr">شارع الشيخ زايد<br>مركز التجارة</p>
+                            <a href="tel:+79917184442" dir="ltr" class="text-brand-cyan hover:text-white transition-colors font-bold text-sm">+7 (991) 718-44-42</a>
+                        </div>
+                        
+                        <!-- أبوظبي -->
+                        <div>
+                            <div class="flex items-center justify-center sm:justify-start mb-2">
+                                <svg class="w-5 h-5 text-brand-cyan ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <h5 class="text-white font-bold text-lg" data-i18n="footer.abudhabi">أبوظبي</h5>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-3" data-i18n-html="footer.abudhabiAddr">جزيرة الريم<br>برج الأعمال</p>
+                            <a href="tel:+79373401024" dir="ltr" class="text-brand-cyan hover:text-white transition-colors font-bold text-sm">+7 (937) 340-10-24</a>
+                        </div>
+
+                        <!-- الشارقة -->
+                        <div>
+                            <div class="flex items-center justify-center sm:justify-start mb-2">
+                                <svg class="w-5 h-5 text-brand-cyan ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <h5 class="text-white font-bold text-lg" data-i18n="footer.sharjah">الشارقة</h5>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-3" data-i18n-html="footer.sharjahAddr">المنطقة الصناعية<br>مجمع الشركات</p>
+                            <a href="tel:+79958320852" dir="ltr" class="text-brand-cyan hover:text-white transition-colors font-bold text-sm">+7 (995) 832-08-52</a>
+                        </div>
+                        
+                        <!-- عجمان -->
+                        <div>
+                            <div class="flex items-center justify-center sm:justify-start mb-2">
+                                <svg class="w-5 h-5 text-brand-cyan ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <h5 class="text-white font-bold text-lg" data-i18n="footer.ajman">عجمان</h5>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-3" data-i18n-html="footer.ajmanAddr">شارع الشيخ عمار<br>&nbsp;</p>
+                            <a href="tel:+37433044410" dir="ltr" class="text-brand-cyan hover:text-white transition-colors font-bold text-sm">+374 33 044 410</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-sm font-semibold text-center md:text-right ltr-text-end" data-i18n="footer.copyright">© 2024 Lumistek. جميع الحقوق محفوظة.</p>
+                
+                <div class="text-gray-500 text-sm font-semibold text-center">
+                    <span data-i18n="footer.creditBefore">تطوير الموقع بواسطة</span> <a href="https://t.me/s777official" target="_blank" rel="noopener" dir="ltr" class="text-brand-cyan hover:text-white transition-colors">@s777official</a>
+                </div>
+                
+                <div class="flex space-x-6 space-x-reverse ltr-space-x">
+                    <a href="javascript:void(0)" onclick="openPrivacyModal()" class="text-gray-500 hover:text-white text-sm font-semibold transition-colors text-center md:text-left ltr-text-end" data-i18n="footer.privacy">سياسة الخصوصية</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Плашка Cookie (UAE PDPL Compliant) -->
+    <div id="cookie-banner" class="fixed bottom-0 left-0 w-full bg-brand-darker border-t border-brand-cyan/30 p-4 z-50 transform transition-transform duration-500 translate-y-full shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-gray-400 text-sm text-center sm:text-right ltr-text-end font-semibold leading-relaxed">
+                <span data-i18n="cookie.before">نحن نستخدم ملفات تعريف الارتباط (Cookies) لضمان حصولك على أفضل تجربة على موقعنا. باستمرارك في استخدام الموقع، فإنك توافق على </span><a href="javascript:void(0)" onclick="openPrivacyModal()" class="text-brand-cyan hover:underline" data-i18n="cookie.link">سياسة الخصوصية</a><span data-i18n="cookie.after"> الخاصة بنا والمطابقة لقوانين دولة الإمارات.</span>
+            </p>
+            <button onclick="acceptCookies()" class="bg-brand-cyan hover:bg-brand-cyan/80 text-white px-8 py-2.5 rounded-xl font-bold transition-colors whitespace-nowrap shadow-lg" data-i18n="cookie.accept">
+                موافق
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Заявка -->
+    <div id="lead-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300 px-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
+        
+        <div class="relative bg-brand-darker border border-white/10 p-6 md:p-10 rounded-2xl w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
+            <button onclick="closeModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white p-2 close-btn" data-i18n-aria="lead.closeAria" aria-label="إغلاق">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h3 class="text-3xl font-extrabold text-white mb-2" data-i18n="lead.title">احجز الآن</h3>
+            <p class="text-gray-400 text-sm mb-8 font-semibold" data-i18n="lead.subtitle">اترك بياناتك وسيقوم خبراؤنا بالتواصل معك في أقرب وقت ممكن.</p>
+            
+            <form id="lead-form" class="space-y-5" onsubmit="submitForm(event)">
+                <div>
+                    <label class="block text-sm font-bold text-gray-300 mb-1.5 mr-1" data-i18n="lead.nameLabel" data-i18n-for="lead.nameLabel">الاسم الكامل</label>
+                    <input type="text" id="form-name" required class="w-full bg-brand-dark border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-cyan transition-colors font-semibold" placeholder="أحمد محمد" data-i18n-placeholder="lead.namePlaceholder">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-300 mb-1.5 mr-1" data-i18n="lead.cityLabel" data-i18n-for="lead.cityLabel">المدينة / الإمارة</label>
+                    <input type="text" id="form-city" required class="w-full bg-brand-dark border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-cyan transition-colors font-semibold" placeholder="دبي" data-i18n-placeholder="lead.cityPlaceholder">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-300 mb-1.5 mr-1" data-i18n="lead.phoneLabel" data-i18n-for="lead.phoneLabel">رقم الهاتف</label>
+                    <input type="tel" id="form-phone" dir="ltr" required class="w-full bg-brand-dark border border-white/10 rounded-xl px-4 py-3 text-white text-right focus:outline-none focus:border-brand-cyan transition-colors font-semibold" placeholder="+971 50 000 0000" data-i18n-placeholder="lead.phonePlaceholder">
+                </div>
+                
+                <p class="text-xs text-gray-500 text-center mt-4 font-semibold">
+                    <span data-i18n="lead.consentBefore">بالنقر على "إرسال"، فإنك توافق على </span><a href="javascript:void(0)" onclick="openPrivacyModal()" class="text-brand-cyan hover:underline" data-i18n="lead.consentLink">سياسة معالجة البيانات الشخصية</a><span data-i18n="lead.consentAfter"> وفقاً لقوانين دولة الإمارات.</span>
+                </p>
+
+                <button type="submit" class="w-full bg-brand-cyan hover:bg-brand-cyan/80 text-white py-4 rounded-xl font-extrabold transition-colors mt-2 text-lg" id="submit-btn" data-i18n="lead.submit">
+                    إرسال الطلب
+                </button>
+                <p id="form-status" class="text-sm text-center font-bold hidden mt-4"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Политика конфиденциальности (Адаптировано под законы ОАЭ) -->
+    <div id="privacy-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300 px-4 py-6">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closePrivacyModal()"></div>
+        
+        <div class="relative bg-brand-darker border border-white/10 p-6 md:p-8 rounded-2xl w-full max-w-3xl shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-full" id="privacy-modal-content">
+            <button onclick="closePrivacyModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white p-2 z-10 bg-brand-darker rounded-full close-btn" data-i18n-aria="privacy.closeAria" aria-label="إغلاق">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h3 class="text-2xl font-extrabold text-white mb-6 pl-8 ltr-pl-8 shrink-0" data-i18n="privacy.title">سياسة الخصوصية وحماية البيانات الشخصية (وفقاً لقانون دولة الإمارات)</h3>
+            
+            <div class="overflow-y-auto desc-scroll pl-4 ltr-pl-4 text-gray-400 text-sm space-y-4 flex-grow font-semibold">
+                <p data-i18n="privacy.p1">توضح سياسة الخصوصية هذه كيفية قيام موقع Lumistek بجمع بياناتك الشخصية واستخدامها وحمايتها، وذلك بالتوافق التام مع المرسوم بقانون اتحادي رقم (45) لسنة 2021 بشأن حماية البيانات الشخصية (PDPL) المعمول به في دولة الإمارات العربية المتحدة.</p>
+                
+                <h4 class="text-white font-extrabold mt-4 mb-2" data-i18n="privacy.s1.title">1. جمع البيانات الشخصية</h4>
+                <p data-i18n="privacy.s1.text">نحن نجمع البيانات الشخصية التي تقدمها طواعية عند ملء النماذج على موقعنا (مثل الاسم، رقم الهاتف، والمدينة). يُعد تقديمك لهذه البيانات بمثابة موافقة صريحة منك على معالجتها للغرض الذي جُمعت من أجله.</p>
+                
+                <h4 class="text-white font-extrabold mt-4 mb-2" data-i18n="privacy.s2.title">2. الغرض من معالجة البيانات</h4>
+                <p data-i18n-html="privacy.s2.text">تُستخدم بياناتك حصرياً للأغراض التالية:<br>
+                — التواصل معك للرد على استفساراتك وتلبية طلباتك.<br>
+                — تحسين جودة خدماتنا وتقديم عروض تناسب احتياجاتك.</p>
+
+                <h4 class="text-white font-extrabold mt-4 mb-2" data-i18n="privacy.s3.title">3. حقوقك كصاحب بيانات (بموجب قانون الإمارات)</h4>
+                <p data-i18n-html="privacy.s3.text">وفقاً لقانون حماية البيانات الشخصية في الإمارات، يحق لك:<br>
+                — <strong>حق الوصول:</strong> طلب نسخة من بياناتك الشخصية التي نحتفظ بها.<br>
+                — <strong>حق التصحيح:</strong> طلب تعديل أو تحديث بياناتك إذا كانت غير دقيقة.<br>
+                — <strong>حق المحو (الحق في النسيان):</strong> طلب حذف بياناتك من سجلاتنا.<br>
+                — <strong>سحب الموافقة:</strong> يحق لك سحب موافقتك على معالجة البيانات في أي وقت.</p>
+
+                <h4 class="text-white font-extrabold mt-4 mb-2" data-i18n="privacy.s4.title">4. أمن البيانات</h4>
+                <p data-i18n="privacy.s4.text">نحن نتخذ كافة التدابير التقنية والتنظيمية اللازمة لحماية بياناتك الشخصية من الوصول غير المصرح به أو الفقدان أو التعديل، بما يتوافق مع المعايير الأمنية المعتمدة.</p>
+
+                <h4 class="text-white font-extrabold mt-4 mb-2" data-i18n="privacy.s5.title">5. ملفات تعريف الارتباط (Cookies)</h4>
+                <p data-i18n="privacy.s5.text">يستخدم الموقع ملفات تعريف الارتباط لتحسين تجربة المستخدم وتحليل حركة المرور. يمكنك إدارة تفضيلاتك من خلال إعدادات المتصفح الخاص بك.</p>
+            </div>
+            
+            <div class="shrink-0 mt-6 pt-4 border-t border-white/10 text-center">
+                <button onclick="closePrivacyModal()" class="bg-brand-cyan hover:bg-brand-cyan/80 text-white px-8 py-2.5 rounded-xl font-bold transition-colors" data-i18n="privacy.close">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Скрипт мобильного меню ---
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const path = document.getElementById('menu-icon-path');
+        const links = menu.querySelectorAll('a');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                path.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+            } else {
+                path.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+            }
+        });
+
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+                path.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+            });
+        });
+
+        // --- Скрипт свайп-слайдера (Адаптировано под RTL: перевернуто направление) ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const slider = document.getElementById('catalog-slider');
+            if (!slider) return;
+            const cards = slider.querySelectorAll('.slider-card');
+            const dots = slider.querySelectorAll('.slider-dot');
+            const btnPrev = document.getElementById('slider-prev');
+            const btnNext = document.getElementById('slider-next');
+            let currentIndex = 0;
+            let startX = 0;
+            let isSwiping = false;
+
+            // Направление анимации зависит от языка:
+            // RTL -> пройденные карточки уходят вправо, новые приходят слева.
+            // LTR -> всё зеркально.
+            function isRTL() {
+                return (document.documentElement.getAttribute('dir') || 'rtl') === 'rtl';
+            }
+
+            function updateSlider(newIndex) {
+                if (newIndex < 0 || newIndex >= cards.length) return;
+                var sign = isRTL() ? 1 : -1;
+
+                cards.forEach((card, index) => {
+                    if (index === newIndex) {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateX(0) scale(1)';
+                        card.style.zIndex = '20';
+                    } else if (index < newIndex) {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateX(' + (100 * sign) + '%) scale(0.95)';
+                        card.style.zIndex = '10';
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateX(' + (-100 * sign) + '%) scale(0.95)';
+                        card.style.zIndex = '10';
+                    }
+                });
+
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('bg-brand-cyan', index === newIndex);
+                    dot.classList.toggle('bg-white', index !== newIndex);
+                    dot.classList.toggle('opacity-100', index === newIndex);
+                    dot.classList.toggle('opacity-50', index !== newIndex);
+                });
+                currentIndex = newIndex;
+            }
+
+            // Обработчики кнопок
+            if(btnPrev) btnPrev.addEventListener('click', () => updateSlider(currentIndex - 1));
+            if(btnNext) btnNext.addEventListener('click', () => updateSlider(currentIndex + 1));
+
+            slider.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                isSwiping = true;
+            }, {passive: true});
+
+            slider.addEventListener('touchmove', (e) => {
+                if (!isSwiping) return;
+                const currentX = e.touches[0].clientX;
+                const diff = startX - currentX;
+                if (Math.abs(diff) > 20) e.preventDefault();
+            }, {passive: false});
+
+            slider.addEventListener('touchend', (e) => {
+                if (!isSwiping) return;
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+
+                // RTL: свайп влево (diff > 0) -> предыдущая карточка
+                // LTR: свайп влево (diff > 0) -> следующая карточка
+                if (Math.abs(diff) > 50) {
+                    var forward = isRTL() ? diff < 0 : diff > 0;
+                    updateSlider(currentIndex + (forward ? 1 : -1));
+                }
+                isSwiping = false;
+            });
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    updateSlider(parseInt(dot.dataset.index));
+                });
+            });
+            
+            updateSlider(0); // Инициализация
+
+            // При смене языка перерисовываем текущую карточку в новом направлении
+            document.addEventListener('lumistek:langchange', function () {
+                updateSlider(currentIndex);
+            });
+        });
+
+        // --- COOKIE БАННЕР ---
+        document.addEventListener("DOMContentLoaded", function() {
+            if (!localStorage.getItem('cookiesAccepted_ae')) {
+                setTimeout(() => {
+                    const banner = document.getElementById('cookie-banner');
+                    if(banner) banner.classList.remove('translate-y-full');
+                }, 1500);
+            }
+        });
+
+        function acceptCookies() {
+            localStorage.setItem('cookiesAccepted_ae', 'true');
+            const banner = document.getElementById('cookie-banner');
+            if(banner) banner.classList.add('translate-y-full');
+        }
+
+        // --- Модальные окна ---
+        const modal = document.getElementById('lead-modal');
+        const modalContent = document.getElementById('modal-content');
+        
+        function openModal() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('form-status').classList.add('hidden');
+            }, 300);
+        }
+
+        const privacyModal = document.getElementById('privacy-modal');
+        const privacyContent = document.getElementById('privacy-modal-content');
+
+        function openPrivacyModal() {
+            if(!modal.classList.contains('hidden')) modal.style.zIndex = '40'; 
+            privacyModal.classList.remove('hidden');
+            setTimeout(() => {
+                privacyModal.classList.remove('opacity-0');
+                privacyContent.classList.remove('scale-95');
+                privacyContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closePrivacyModal() {
+            privacyModal.classList.add('opacity-0');
+            privacyContent.classList.remove('scale-100');
+            privacyContent.classList.add('scale-95');
+            setTimeout(() => {
+                privacyModal.classList.add('hidden');
+                modal.style.zIndex = '50';
+            }, 300);
+        }
+
+        // При смене языка возвращаем на кнопке отправки правильный текст
+        document.addEventListener('lumistek:langchange', function () {
+            const sb = document.getElementById('submit-btn');
+            if (sb && !sb.disabled) sb.innerText = LumistekLang.t('lead.submit');
+        });
+
+        // --- Отправка формы ---
+        async function submitForm(e) {
+            e.preventDefault(); 
+            const btn = document.getElementById('submit-btn');
+            const status = document.getElementById('form-status');
+            
+            const name = document.getElementById('form-name').value;
+            const city = document.getElementById('form-city').value;
+            const phone = document.getElementById('form-phone').value;
+            
+            // TODO: Для перевода заявок из ОАЭ в ваш TG, измените текст:
+            const text = `🔥 طلب جديد من دبي (Lumistek)!\n\n👤 الاسم: ${name}\n🏙 المدينة: ${city}\n📞 الهاتف: ${phone}`;
+
+            btn.disabled = true;
+            btn.innerText = LumistekLang.t('lead.sending');
+            status.classList.remove('hidden');
+            
+            // ТЕСТОВЫЙ РЕЖИМ:
+            setTimeout(() => {
+                status.innerText = LumistekLang.t('lead.success');
+                status.className = 'text-sm text-center mt-4 text-green-400 block font-bold';
+                document.getElementById('lead-form').reset();
+                btn.innerText = LumistekLang.t('lead.submit');
+                btn.disabled = false;
+                setTimeout(closeModal, 2500); 
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
