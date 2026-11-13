@@ -225,7 +225,7 @@ window.LUMISTEK_CATALOG = {
             image: 'img/products/windshield-protection.jpg',
             badge: 'brand-cyan',
             popular: true,
-            hidden: false,
+            hidden: true,
             description: 'Прозрачная полиуретановая плёнка для стёкол LUMISTEK WINDSHIELD PROTECTION — одно из новейших инновационных решений в области защитных материалов для защиты лобовых стёкол транспортного средства. Это один из лучших способов защитить лобовое стекло от сколов, царапин, трещин и прочих дефектов.',
             descriptionEn: 'LUMISTEK WINDSHIELD PROTECTION transparent polyurethane film for windshields is one of the latest innovative solutions in the field of protective materials for safeguarding vehicle windshields. This is one of the best ways to protect the windshield from chips, scratches, cracks, and other defects.',
             descriptionAr: 'يُعدّ غشاء البولي يوريثين الشفاف للزجاج LUMISTEK WINDSHIELD PROTECTION أحد أحدث الحلول المبتكرة في مجال المواد الواقية لحماية الزجاج الأمامي للمركبات. وهي إحدى أفضل الطرق لحماية الزجاج الأمامي من التشققات والخدوش والشقوق وغيرها من العيوب.',
