@@ -219,6 +219,7 @@
         <div class="max-w-7xl mx-auto px-4 flex gap-1 overflow-x-auto">
             <button id="tab-products" type="button" class="tab-btn">Товары</button>
             <button id="tab-gallery"  type="button" class="tab-btn">Примеры работ</button>
+            <button id="tab-offices"  type="button" class="tab-btn">Филиалы</button>
             <button id="tab-videos"   type="button" class="tab-btn">Видео</button>
         </div>
     </header>
@@ -430,6 +431,120 @@
 
             <div id="gallery-empty" class="hidden card px-4 py-12 text-center">
                 <p class="text-sm text-gray-500">Фотографий пока нет. Добавьте первые через поле выше.</p>
+            </div>
+        </section>
+
+        <!-- ============ ВКЛАДКА: ФИЛИАЛЫ ============ -->
+        <section id="view-offices" class="hidden">
+
+            <div class="flex items-center justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-lg font-semibold text-white">Филиалы и контакты</h2>
+                    <p class="text-sm text-gray-500 mt-0.5">
+                        Телефон в шапке и подвале, список филиалов. Скрытые филиалы
+                        остаются в списке, но не видны на сайте.
+                    </p>
+                </div>
+                <button id="office-add" type="button" class="btn btn-primary shrink-0">+ Добавить филиал</button>
+            </div>
+
+            <!-- Главный телефон + общий выключатель блока -->
+            <div class="card p-5 mb-6">
+                <h3 class="text-base font-semibold text-white mb-4">Общие настройки</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="office-main-phone" class="block text-xs text-gray-400 mb-1.5">
+                            Главный телефон (шапка, подвал, форма заказа)
+                        </label>
+                        <input id="office-main-phone" class="fld" dir="ltr" placeholder="+971 4 000 0000">
+                        <p class="text-[11px] text-gray-500 mt-1">
+                            Формат ОАЭ: +971 4 XXX XXXX для города или +971 5X XXX XXXX для мобильного.
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1.5">Блок филиалов на сайте</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer mt-2">
+                            <input id="office-show" type="checkbox" class="accent-brand-cyan w-4 h-4">
+                            Показывать блок подвала
+                        </label>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mt-5 pt-4 border-t border-white/10">
+                    <button id="office-save-common" type="button" class="btn btn-primary">Сохранить настройки</button>
+                    <span id="office-common-status" class="text-xs text-gray-500"></span>
+                </div>
+            </div>
+
+            <!-- Форма филиала -->
+            <form id="office-form" class="card p-5 mb-6 hidden">
+                <h3 id="office-form-title" class="text-base font-semibold text-white mb-2">Новый филиал</h3>
+                <p id="office-id-note" class="text-[11px] text-gray-500 font-mono mb-5"></p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label for="office-city" class="block text-xs text-gray-400 mb-1.5">Город (рус.)</label>
+                        <input id="office-city" class="fld" placeholder="Дубай">
+                    </div>
+                    <div>
+                        <label for="office-city-en" class="block text-xs text-gray-400 mb-1.5">Город (англ.)</label>
+                        <input id="office-city-en" class="fld" placeholder="Dubai">
+                    </div>
+                    <div>
+                        <label for="office-city-ar" class="block text-xs text-gray-400 mb-1.5">Город (араб.)</label>
+                        <input id="office-city-ar" class="fld" dir="rtl" placeholder="دبي">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                    <div>
+                        <label for="office-address" class="block text-xs text-gray-400 mb-1.5">
+                            Адрес (рус.) — можно &lt;br&gt;
+                        </label>
+                        <textarea id="office-address" class="fld" rows="2" placeholder="Шейх Заед Роуд<br>Trade Centre"></textarea>
+                    </div>
+                    <div>
+                        <label for="office-address-en" class="block text-xs text-gray-400 mb-1.5">Адрес (англ.)</label>
+                        <textarea id="office-address-en" class="fld" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label for="office-address-ar" class="block text-xs text-gray-400 mb-1.5">Адрес (араб.)</label>
+                        <textarea id="office-address-ar" class="fld" dir="rtl" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                    <div>
+                        <label for="office-phone" class="block text-xs text-gray-400 mb-1.5">Телефон</label>
+                        <input id="office-phone" class="fld" dir="ltr" placeholder="+971 4 000 0000">
+                    </div>
+                    <div>
+                        <label for="office-note" class="block text-xs text-gray-400 mb-1.5">
+                            Подпись под телефоном (необязательно)
+                        </label>
+                        <input id="office-note" class="fld" placeholder="например: WhatsApp, 9:00–20:00">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1.5">Видимость</label>
+                        <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer mt-2">
+                            <input id="office-visible" type="checkbox" class="accent-brand-cyan w-4 h-4" checked>
+                            Показывать на сайте
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 mt-6 pt-5 border-t border-white/10">
+                    <button id="office-save" type="submit" class="btn btn-primary">Сохранить филиал</button>
+                    <button id="office-cancel" type="button" class="btn btn-ghost">Отмена</button>
+                    <button id="office-translate" type="button" class="btn btn-ghost">Перевести на EN/AR</button>
+                    <span id="office-status" class="text-xs text-gray-500"></span>
+                </div>
+            </form>
+
+            <!-- Список филиалов -->
+            <div id="office-list" class="space-y-3"></div>
+
+            <div id="office-empty" class="hidden card px-4 py-12 text-center">
+                <p class="text-sm text-gray-500">Филиалов пока нет. Добавьте первый кнопкой выше.</p>
             </div>
         </section>
 
