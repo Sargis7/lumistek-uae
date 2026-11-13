@@ -126,8 +126,8 @@ window.LUMISTEK_CATALOG = {
             descriptionEn: 'There are also matte anti-gravel films. They are designed for both cars painted with matte paint and cars of any body color to preserve the original color but make it matte. One such film is the premium matte stone chip protection film LUMISTEK MATTE PROTECTION.',
             descriptionAr: 'توجد أيضًا أشرطة حماية من الحصى غير لامعة. وهي مصممة لكل من السيارات المطلية بطلاء غير لامع والسيارات ذات أي لون هيكل، وذلك للحفاظ على اللون الأصلي ولكن بجعله غير لامع. أحد هذه الأغشية هو الغشاء غير اللامع الممتاز للحماية من الحصى LUMISTEK MATTE PROTECTION.',
             units: [
-                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 3390, note: 'AED 229 за метр', noteEn: 'AED 229 per meter', noteAr: '229 درهم للمتر' },
-                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 239, note: '', noteEn: '', noteAr: '' }
+                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 4000, note: 'AED 270 за метр', noteEn: 'AED 270 per meter', noteAr: '270 درهم للمتر' },
+                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 270, note: '', noteEn: '', noteAr: '' }
             ],
             spec: ['Матовый сатин', 'Антигравийная', 'Сохраняет цвет кузова'],
             specEn: ['Matte satin', 'Anti-gravel', 'Preserves the color of the body'],
