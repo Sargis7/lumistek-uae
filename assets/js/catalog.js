@@ -197,7 +197,7 @@ window.LUMISTEK_CATALOG = {
             image: 'img/products/mhp-plus.jpg',
             badge: 'brand-blue',
             popular: true,
-            hidden: false,
+            hidden: true,
             description: '',
             descriptionEn: '',
             descriptionAr: '',
