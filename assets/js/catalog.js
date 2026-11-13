@@ -39,7 +39,7 @@
 window.LUMISTEK_CATALOG = {
 
     /* Дата последнего изменения — обновляется админкой автоматически. */
-    updated: '2026-11-12',
+    updated: '2026-11-13',
 
     /* ------------------------------------------------------------------
      *  РАЗДЕЛЫ КАТАЛОГА
@@ -101,8 +101,8 @@ window.LUMISTEK_CATALOG = {
             descriptionEn: 'CLEAR PRO is one of the premium materials, distinguished by its ceramic Top Coat layer, which makes it resistant to the most aggressive external factors. It is ideal for white and light colors and for countries with hot and harsh climates.',
             descriptionAr: 'تُعد CLEAR PRO من بين المواد الممتازة، وتتميز بوجود طبقة سيراميك Top Coat، مما يجعلها مقاومة لأشد العوامل الخارجية قسوة. وهي مثالية للألوان البيضاء والفاتحة وللبلدان ذات المناخ الحار والقاسي.',
             units: [
-                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 2890, note: 'AED 189 за метр', noteEn: 'AED 189 per meter', noteAr: '189 درهم للمتر' },
-                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 199, note: '', noteEn: '', noteAr: '' }
+                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 3800, note: 'AED 255 за метр', noteEn: 'AED 255 per meter', noteAr: '255 درهم للمتر' },
+                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 255, note: '', noteEn: '', noteAr: '' }
             ],
             spec: ['Керамический Top Coat', 'Не желтеет', 'Для жаркого климата'],
             specEn: ['Ceramic Top Coat', 'Non-yellowing.', 'For hot climates'],
