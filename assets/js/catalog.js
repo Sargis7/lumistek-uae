@@ -251,7 +251,7 @@ window.LUMISTEK_CATALOG = {
             image: 'img/products/headlight-protect.jpg',
             badge: 'brand-pink',
             popular: false,
-            hidden: false,
+            hidden: true,
             description: 'Светло-коричневая полиуретановая плёнка для оптики. Придаёт фарам глубокий затемнённый оттенок и одновременно защищает их от мелких сколов и пескоструя.',
             descriptionEn: 'Light brown polyurethane film for optics. It gives the headlights a deep, darkened tint while protecting them from small chips and sandblasting.',
             descriptionAr: 'طبقة بولي يوريثان بلون بني فاتح للأجزاء البصرية. تمنح المصابيح الأمامية لونًا داكنًا عميقًا وفي الوقت نفسه تحميها من الخدوش الصغيرة والتآكل الناجم عن الرمال.',
