@@ -146,7 +146,7 @@ window.LUMISTEK_CATALOG = {
             image: 'img/products/clear-ultra-pro.jpg',
             badge: 'brand-cyan',
             popular: false,
-            hidden: false,
+            hidden: true,
             description: 'Идеальный продукт, когда 190 мкм недостаточно для обеспечения высокого уровня защиты. Именно поэтому специалисты компании Lumistek взялись за разработку усиленной «брони» для автомобилей. Результатом долгой и кропотливой работы стало появление уникального материала, получившего название Lumistek Clear Ultra Pro. Отличительная черта этой антигравийной плёнки заключается в повышенной толщине — 215 мкм, без лайнера.',
             descriptionEn: 'The ideal product when 190 microns is not enough to provide a high level of protection. That\'s why Lumistek experts set out to develop reinforced "armor" for cars. The result of long and painstaking work was the emergence of a unique material called Lumistek Clear Ultra Pro. The distinctive feature of this anti-gravel film is its increased thickness of 215 microns, without a liner.',
             descriptionAr: 'المنتج المثالي عندما لا يكون 190 ميكرومتر كافيًا لتوفير مستوى عالٍ من الحماية. لهذا السبب شرع خبراء شركة Lumistek في تطوير "درع" معزز للسيارات. وكانت نتيجة العمل الطويل والشاق ظهور مادة فريدة من نوعها أُطلق عليها اسم Lumistek Clear Ultra Pro. تتمثل السمة المميزة لطبقة الحماية من الحصى هذه في سُمكها الزائد — 215 ميكرومتر، بدون طبقة حماية.',
