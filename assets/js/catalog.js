@@ -169,15 +169,15 @@ window.LUMISTEK_CATALOG = {
             subtitleEn: 'Hard TOP COAT · 215 microns',
             subtitleAr: 'طبقة علوية صلبة · 215 ميكرون',
             image: 'img/products/ultra-pro-one.jpg',
-            badge: 'brand-cyan',
+            badge: 'Polycarbonate',
             popular: false,
             hidden: false,
             description: 'Отличительная черта LUMISTEK ULTRA PRO ONE — твёрдый TOP COAT и толщина 215 мкм. Защита от химического воздействия реагентов, поэтому плёнка не пожелтеет со временем. Идеально подходит для стран с агрессивно жарким климатом.',
             descriptionEn: 'The distinctive feature of LUMISTEK ULTRA PRO ONE is its hard TOP COAT and a thickness of 215 microns. Protection against the chemical effects of reagents, so the film will not yellow over time. Ideal for countries with an aggressively hot climate.',
             descriptionAr: 'السمة المميزة لـ LUMISTEK ULTRA PRO ONE هي طبقة التشطيب الصلبة وسُمكها البالغ 215 ميكرومتر. حماية من التأثيرات الكيميائية للمواد الكاشفة، وبالتالي لن يصفر اللون مع مرور الوقت. مثالية للبلدان ذات المناخ الحار القاسي.',
             units: [
-                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 3990, note: 'AED 269 за метр', noteEn: 'AED 269 per meter', noteAr: '269 درهم للمتر' },
-                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 269, note: '', noteEn: '', noteAr: '' }
+                { key: 'roll', label: 'Рулон 1,52 × 15 м', labelEn: 'Roll 1.52 × 15 m', labelAr: 'لفة 1.52 × 15 م', price: 4500, note: 'AED 300 за метр', noteEn: 'AED 269 per meter', noteAr: '300 درهم للمتر' },
+                { key: 'meter', label: 'За метр (1,52 м шириной)', labelEn: 'Per meter (1.52 m wide)', labelAr: 'للمتر (عرض 1.52 متر)', price: 300, note: '', noteEn: '', noteAr: '' }
             ],
             spec: ['Толщина 215 мкм', 'Твёрдый Top Coat', 'Стойкость к реагентам'],
             specEn: ['Thickness 215 microns', 'Hard Top Coat', 'Durability to Chemical Agents'],
