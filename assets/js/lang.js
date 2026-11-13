@@ -146,8 +146,11 @@
             applyToElement(nodes[i], lang);
         }
 
-        // title страницы
-        var t = lookup(lang, "meta.title");
+        // title страницы: у каждой страницы свой ключ.
+        // <body data-page="cart"> -> meta.title.cart, иначе meta.title
+        var page = document.body ? document.body.getAttribute("data-page") : null;
+        var t = page ? lookup(lang, "meta.title." + page) : null;
+        if (t === null) t = lookup(lang, "meta.title");
         if (t !== null) document.title = t;
 
         updateSwitchers(lang);

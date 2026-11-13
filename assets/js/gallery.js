@@ -1,0 +1,70 @@
+/**
+ * ============================================================================
+ *  LUMISTEK — ГАЛЕРЕЯ РАБОТ (фото партнеров)
+ * ============================================================================
+ *
+ *  ЭТОТ ФАЙЛ ОБНОВЛЯЕТСЯ АДМИНКОЙ АВТОМАТИЧЕСКИ:
+ *      https://lumistek.ru/adminpanel/   → раздел «Работы»
+ *
+ *  Руками тут править не нужно. Но если админка недоступна — можно:
+ *  на GitHub нажмите на файл, потом на карандаш (Edit), затем «Commit changes».
+ *
+ *  КАК ЭТО РАБОТАЕТ:
+ *  Главная страница берет отсюда список фотографий и рисует карусель сама.
+ *  Если этот файл не подключен на главной, там показываются первые
+ *  картинки из img/gallery/, и ничего не ломается.
+ *
+ *  ПРАВИЛА:
+ *   1. Не удаляйте скобки { } [ ] , :  — сайт сломается.
+ *   2. Текст — в кавычках: 'вот так'.
+ *   3. После каждого значения запятая, КРОМЕ последнего в списке.
+ *   4. file   — путь к фото от корня сайта, например 'img/gallery/gallery-1.jpg'.
+ *      caption — подпись мелким шрифтом. Можно оставить пустой: ''.
+ *
+ * ============================================================================
+ */
+
+window.LUMISTEK_GALLERY = {
+
+    /* Дата последнего изменения — обновляется админкой автоматически. */
+    updated: '2026-11-12',
+
+    photos: [
+        {
+            file: 'img/gallery/gallery-1.jpg',
+            caption: 'Оклейка кузова защитной пленкой',
+            captionEn: 'Full-body paint protection film installation',
+            captionAr: 'تركيب فيلم حماية الطلاء لكامل الهيكل'
+        },
+        {
+            file: 'img/gallery/gallery-2.jpg',
+            caption: 'Работа партнера Lumistek',
+            captionEn: 'Work by a Lumistek partner',
+            captionAr: 'عمل من تنفيذ أحد شركاء لوميستيك'
+        },
+        {
+            file: 'img/gallery/gallery-3.jpg',
+            caption: 'Полиуретановая пленка Lumistek',
+            captionEn: 'Lumistek polyurethane film',
+            captionAr: 'فيلم بولي يوريثان من لوميستيك'
+        },
+        {
+            file: 'img/gallery/gallery-4.jpg',
+            caption: 'Оклейка кузова защитной пленкой',
+            captionEn: 'Full-body paint protection film installation',
+            captionAr: 'تركيب فيلم حماية الطلاء لكامل الهيكل'
+        },
+        {
+            file: 'img/gallery/gallery-5.jpg',
+            caption: 'Работа партнера Lumistek',
+            captionEn: 'Work by a Lumistek partner',
+            captionAr: 'عمل من تنفيذ أحد شركاء لوميستيك'
+        },
+        {
+            file: 'img/gallery/gallery-6.jpg',
+            caption: 'Полиуретановая пленка Lumistek',
+            captionEn: 'Lumistek polyurethane film',
+            captionAr: 'فيلم بولي يوريثان من لوميستيك'
+        }
+    ]
+};
