@@ -1234,10 +1234,15 @@
 
         // ========================================================
         // NOTE: TELEGRAM BOT SETTINGS
-        // Paste your credentials here:
-        const botToken = 'ВАШ_ТОКЕН_БОТА'; 
-        const chatId = 'ВАШ_CHAT_ID'; 
+        // Same bot and chat as the Russian site, so all requests land together.
+        // WARNING: this token is visible in the page source. See
+        // "ИНСТРУКЦИЯ-подключение-бота.md" for moving the send to a server.
+        const botToken = '9036359024:AAE_jBRlw-O_JtgT-ykpAHTVci-qU0MwdO8';
+        const chatId   = '-5447041065';
         // ========================================================
+
+        // Сколько ждём Telegram, прежде чем сказать «не дозвонились».
+        const LEAD_TIMEOUT_MS = 15000;
 
         // Shorthand for dictionary lookups from JS. catalogue-i18n.js only holds a
         // handful of cart labels, so anything else comes from the main dictionary.
@@ -1262,9 +1267,17 @@
             const btn = document.getElementById('submit-btn');
             const status = document.getElementById('form-status');
             
-            const name = document.getElementById('form-name').value;
-            const city = document.getElementById('form-city').value;
-            const phone = document.getElementById('form-phone').value;
+            const name = document.getElementById('form-name').value.trim();
+            const city = document.getElementById('form-city').value.trim();
+            const phone = document.getElementById('form-phone').value.trim();
+
+            /* Пустые поля браузер отсекает сам (required), но пробелы он
+               пустым значением не считает — проверяем здесь. */
+            if (!name || !city || !phone) {
+                status.innerText = t('lead.error');
+                status.className = 'text-sm text-center mt-4 text-red-400 block';
+                return;
+            }
             
             const text = OWNER_MESSAGES.header +
                 '\n\n👤 ' + OWNER_MESSAGES.name + ': ' + name +
@@ -1276,33 +1289,44 @@
             status.classList.remove('hidden');
             status.innerText = t('lead.sending');
             status.className = 'text-sm text-center mt-4 text-gray-400 block';
+
+            /* Таймаут — чтобы кнопка не висела вечно при плохой сети. */
+            let controller = null;
+            const opts = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: text })
+            };
+            if (typeof window.AbortController === 'function') {
+                controller = new window.AbortController();
+                opts.signal = controller.signal;
+            }
+            let timer = window.setTimeout(function () {
+                if (controller) controller.abort();
+            }, LEAD_TIMEOUT_MS);
             
             try {
-                // If you have NOT configured the bot token and ID yet, comment out the block below
-                // (add /* before "const response" and */ after "if(!response.ok)").
-                
-                // REAL SENDING:
-                /*
-                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: chatId, text: text })
-                });
-                
-                if (!response.ok) throw new Error('Network error');
-                */
-                
-                // TEST MODE:
-                setTimeout(() => {
-                    status.innerText = t('lead.success');
-                    status.className = 'text-sm text-center mt-4 text-green-400 block';
-                    document.getElementById('lead-form').reset();
-                    btn.innerText = t('lead.submit');
-                    btn.disabled = false;
-                    setTimeout(closeModal, 2500); 
-                }, 1000);
+                const response = await fetch(
+                    `https://api.telegram.org/bot${botToken}/sendMessage`, opts
+                );
+                window.clearTimeout(timer);
+
+                /* Мало проверить response.ok: Telegram отвечает 200 и на
+                   отказ, а причину кладёт в description. */
+                const data = await response.json().catch(function () { return {}; });
+                if (!response.ok || !data || data.ok !== true) {
+                    throw new Error((data && data.description) || ('HTTP ' + response.status));
+                }
+
+                status.innerText = t('lead.success');
+                status.className = 'text-sm text-center mt-4 text-green-400 block';
+                document.getElementById('lead-form').reset();
+                btn.innerText = t('lead.submit');
+                btn.disabled = false;
+                setTimeout(closeModal, 2500); 
 
             } catch (error) {
+                window.clearTimeout(timer);
                 status.innerText = t('lead.error');
                 status.className = 'text-sm text-center mt-4 text-red-400 block';
                 btn.innerText = t('lead.submit');
