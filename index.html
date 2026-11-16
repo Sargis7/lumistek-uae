@@ -685,9 +685,12 @@
                     <svg class="w-6 h-6 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
-                <!-- Card strip. Scrolls by swipe on phones and by arrows / mouse wheel on desktop. -->
+                <!-- Card strip. Scrolls by swipe on phones and by arrows / mouse wheel on desktop.
+                     IMPORTANT: touch-pan-x must NOT be here. It lets the strip claim
+                     vertical finger movement too, so the page stops scrolling while the
+                     finger rests on a video card. Same fix as on the Russian site. -->
                 <div id="news-track"
-                     class="flex overflow-x-auto gap-4 md:gap-6 pb-4 snap-x snap-mandatory touch-pan-x"
+                     class="flex overflow-x-auto gap-4 md:gap-6 pb-4 snap-x snap-mandatory"
                      role="list"
                      aria-label="Latest Lumistek videos on YouTube" data-i18n-aria="news.trackAria">
                     <!-- Cards are added by news.js -->
@@ -1104,30 +1107,57 @@
             /* При смене языка пересчитываем стороны: направление поменялось. */
             document.addEventListener('lumistek:langchange', () => updateSlider(currentIndex));
 
+            /* Слайдер листается сознательно свайпом и при этом не мешает
+               прокрутке страницы. Гасим жест только тогда, когда палец
+               явно поехал вбок.
+
+               Раньше проверялась одна горизонталь, и этого было мало сразу
+               по двум причинам. Первая: палец, который сдвинулся на 21px
+               в сторону и дальше поехал вниз, считался свайпом, слайдер
+               вызывал preventDefault() — и страница вставала. Вторая, хуже:
+               preventDefault() надо звать не позже третьего touchmove подряд,
+               иначе браузер перехватывает жест себе. Движение вбок начинается
+               плавно, порог 20px набирался только на четвёртом-пятом событии —
+               и жест был уже отдан. Поэтому теперь ось фиксируем один раз по
+               первому заметному движению (8px, то есть первое же событие),
+               а глушим, как только по этой оси набежало 10px. Слайдеру для
+               решения нужно 50px, так что на мелкое дрожание он не реагирует. */
+            const AXIS_LOCK = 8;   // когда решаем, куда едет палец
+            const AXIS_KILL = 10;  // когда забираем жест себе
+            let startY = 0;
+            let axis = null;       // 'x' | 'y' | null — пока не решили
+
             slider.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                axis = null;
                 isSwiping = true;
             }, {passive: true});
 
             slider.addEventListener('touchmove', (e) => {
                 if (!isSwiping) return;
-                const currentX = e.touches[0].clientX;
-                const diff = startX - currentX;
-                if (Math.abs(diff) > 20) e.preventDefault();
+                const dx = Math.abs(e.touches[0].clientX - startX);
+                const dy = Math.abs(e.touches[0].clientY - startY);
+
+                if (!axis && Math.max(dx, dy) >= AXIS_LOCK) axis = dx > dy ? 'x' : 'y';
+
+                /* Пошли вбок — забираем жест у страницы. Вертикаль не трогаем. */
+                if (axis === 'x' && dx >= AXIS_KILL) e.preventDefault();
             }, {passive: false});
 
             slider.addEventListener('touchend', (e) => {
                 if (!isSwiping) return;
-                const endX = e.changedTouches[0].clientX;
-                const diff = startX - endX;
+                const dx = e.changedTouches[0].clientX - startX;
+                const dy = e.changedTouches[0].clientY - startY;
 
                 /* Свайп «вперёд» — это движение контента назад, то есть палец
-                   влево в LTR и вправо в RTL. */
-                if (Math.abs(diff) > 50) {
-                    const forward = isRtl() ? diff < 0 : diff > 0;
+                   влево в LTR и вправо в RTL. По вертикали не листаем. */
+                if (axis === 'x' && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+                    const forward = isRtl() ? dx > 0 : dx < 0;
                     updateSlider(forward ? currentIndex + 1 : currentIndex - 1);
                 }
                 isSwiping = false;
+                axis = null;
             });
 
             dots.forEach(dot => {
