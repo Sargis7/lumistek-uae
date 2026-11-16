@@ -53,6 +53,29 @@
         .slider-card {
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /*
+         * Стрелки слайдера: сторона и направление шеврона зависят от dir.
+         * В LTR «назад» слева, «вперёд» справа — как на обычном сайте.
+         * В RTL всё зеркально. Классы Tailwind -left-16/-right-16 здесь
+         * не годятся: они не учитывают направление и в RTL дают
+         * перевёрнутое управление.
+         */
+        .slider-arrow-prev { left: -4rem; }
+        .slider-arrow-next { right: -4rem; }
+        [dir="rtl"] .slider-arrow-prev { left: auto; right: -4rem; }
+        [dir="rtl"] .slider-arrow-next { left: -4rem; right: auto; }
+
+        /* Шеврон указывает в сторону движения: prev — назад, next — вперёд. */
+        [dir="rtl"] .slider-chevron-prev { transform: scaleX(-1); }
+        [dir="rtl"] .slider-chevron-next { transform: scaleX(-1); }
+
+        @media (max-width: 1023px) {
+            .slider-arrow-prev { left: 0.5rem; }
+            .slider-arrow-next { right: 0.5rem; }
+            [dir="rtl"] .slider-arrow-prev { left: auto; right: 0.5rem; }
+            [dir="rtl"] .slider-arrow-next { left: 0.5rem; right: auto; }
+        }
         
         /* Smooth lift of cards on hover */
         .card-hover {
@@ -370,12 +393,14 @@
             
             <div class="relative w-full max-w-lg mx-auto md:max-w-4xl h-[580px] md:h-[650px] perspective-1000 touch-pan-y" id="catalog-slider">
                 
-                <!-- Стрелки (RTL логика: Previous = вправо, Next = влево) -->
-                <button class="hidden md:flex absolute top-1/2 -right-16 transform -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-prev" id="slider-prev" aria-label="السابق" data-i18n-aria="products.prevAria">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <!-- Стрелки. Сторона зависит от направления текста:
+                     EN (ltr) — «назад» слева, «вперёд» справа, как в обычном сайте;
+                     AR (rtl) — зеркально. Фактические стили в <style> (slider-arrow-*). -->
+                <button class="hidden md:flex absolute top-1/2 -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-prev" id="slider-prev" aria-label="السابق" data-i18n-aria="products.prevAria">
+                    <svg class="w-6 h-6 slider-chevron-prev" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <button class="hidden md:flex absolute top-1/2 -left-16 transform -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-next" id="slider-next" aria-label="التالي" data-i18n-aria="products.nextAria">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                <button class="hidden md:flex absolute top-1/2 -translate-y-1/2 bg-white/10 hover:bg-brand-cyan text-white p-3 rounded-full backdrop-blur-md transition-all z-30 slider-arrow-next" id="slider-next" aria-label="التالي" data-i18n-aria="products.nextAria">
+                    <svg class="w-6 h-6 slider-chevron-next" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
                 <!-- Товар 1 -->
@@ -618,18 +643,21 @@
                     </div>
                 </div>
                 
-                <!-- Точки навигации -->
-                <div class="absolute bottom-2 left-0 right-0 flex justify-center space-x-2 space-x-reverse z-30 px-4 overflow-x-auto">
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-brand-cyan opacity-100 transition-opacity flex-shrink-0" data-index="0"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="1"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="2"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="3"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="4"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="5"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="6"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="7"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="8"></button>
-                    <button class="slider-dot w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="9"></button>
+                <!-- Точки навигации.
+                     gap вместо space-x-*: space-x-reverse в RTL переворачивает
+                     отступы и точки наезжают друг на друга (замер: -32px).
+                     Дополнительно оборачиваем в невидимую зону нажатия 12px. -->
+                <div class="absolute bottom-2 left-0 right-0 flex justify-center items-center gap-2 md:gap-3 z-30 px-4 flex-wrap">
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-brand-cyan opacity-100 transition-opacity flex-shrink-0" data-index="0"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="1"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="2"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="3"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="4"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="5"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="6"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="7"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="8"></button>
+                    <button class="slider-dot relative w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 transition-opacity flex-shrink-0" data-index="9"></button>
                 </div>
             </div>
         </div>
@@ -779,7 +807,23 @@
                 });
             }
 
-            render();
+            /*
+             * Первый рендер запускаем ПОСЛЕ инициализации языка.
+             * Этот скрипт стоит в конце документа, но lang.js применяет язык
+             * на DOMContentLoaded — то есть позже. Если отрисовать раньше,
+             * подписи берутся по умолчанию (арабский) и остаются такими
+             * на английской странице: событие langchange не приходит,
+             * потому что язык не менялся — он просто ещё не был применён.
+             */
+            function bootGallery() {
+                render();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bootGallery);
+            } else {
+                bootGallery();
+            }
             document.addEventListener('lumistek:langchange', render);
         })();
 
@@ -838,11 +882,11 @@
                 <!-- Branches -->
                 <div class="col-span-1 lg:col-span-9">
                     <h4 class="text-xl font-bold mb-8 text-white text-center lg:text-start" data-i18n="footer.offices">Our Representative Offices</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-start">
-                        <!-- Список филиалов рисует assets/js/offices.js из offices-data.js.
-                             Правятся они в админ-панели: вкладка «Филиалы». -->
-                        <div id="offices-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-start"></div>
-</div>
+                    <!-- Список филиалов рисует assets/js/offices.js из offices-data.js.
+                         Правятся они в админ-панели: вкладка «Филиалы».
+                         ВАЖНО: сетка объявлена только здесь. Второй grid-обёртки быть
+                         не должно — иначе 4 карточки ужимаются в одну колонку. -->
+                    <div id="offices-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center sm:text-start"></div>
                 </div>
             </div>
 
@@ -1014,8 +1058,20 @@
             let startX = 0;
             let isSwiping = false;
 
+            /* Направление текста. От него зависит, в какую сторону уезжают карточки:
+               LTR (EN) — вперёд это вправо, значит ушедшие карточки слева;
+               RTL (AR) — зеркально. Без этого английская версия листалась как арабская. */
+            function isRtl() {
+                return (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
+            }
+
             function updateSlider(newIndex) {
                 if (newIndex < 0 || newIndex >= cards.length) return;
+
+                const rtl = isRtl();
+                /* «До» текущей (index < newIndex) и «после» (index > newIndex) — по порядку показа. */
+                const pastX = rtl ? 100 : -100;
+                const futureX = rtl ? -100 : 100;
 
                 cards.forEach((card, index) => {
                     if (index === newIndex) {
@@ -1024,11 +1080,11 @@
                         card.style.zIndex = '20';
                     } else if (index < newIndex) {
                         card.style.opacity = '0';
-                        card.style.transform = 'translateX(-100%) scale(0.95)';
+                        card.style.transform = 'translateX(' + pastX + '%) scale(0.95)';
                         card.style.zIndex = '10';
                     } else {
                         card.style.opacity = '0';
-                        card.style.transform = 'translateX(100%) scale(0.95)';
+                        card.style.transform = 'translateX(' + futureX + '%) scale(0.95)';
                         card.style.zIndex = '10';
                     }
                 });
@@ -1044,6 +1100,9 @@
 
             if(btnPrev) btnPrev.addEventListener('click', () => updateSlider(currentIndex - 1));
             if(btnNext) btnNext.addEventListener('click', () => updateSlider(currentIndex + 1));
+
+            /* При смене языка пересчитываем стороны: направление поменялось. */
+            document.addEventListener('lumistek:langchange', () => updateSlider(currentIndex));
 
             slider.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
@@ -1062,9 +1121,11 @@
                 const endX = e.changedTouches[0].clientX;
                 const diff = startX - endX;
 
-                if (Math.abs(diff) > 50) { 
-                    if (diff > 0) updateSlider(currentIndex + 1); 
-                    else updateSlider(currentIndex - 1); 
+                /* Свайп «вперёд» — это движение контента назад, то есть палец
+                   влево в LTR и вправо в RTL. */
+                if (Math.abs(diff) > 50) {
+                    const forward = isRtl() ? diff < 0 : diff > 0;
+                    updateSlider(forward ? currentIndex + 1 : currentIndex - 1);
                 }
                 isSwiping = false;
             });
