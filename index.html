@@ -1233,16 +1233,12 @@
         }
 
         // ========================================================
-        // NOTE: TELEGRAM BOT SETTINGS
-        // Same bot and chat as the Russian site, so all requests land together.
-        // WARNING: this token is visible in the page source. See
-        // "ИНСТРУКЦИЯ-подключение-бота.md" for moving the send to a server.
-        const botToken = '9036359024:AAE_jBRlw-O_JtgT-ykpAHTVci-qU0MwdO8';
-        const chatId   = '-5447041065';
         // ========================================================
-
-        // Сколько ждём Telegram, прежде чем сказать «не дозвонились».
-        const LEAD_TIMEOUT_MS = 15000;
+        // LEAD SUBMISSION (via proxy)
+        // The bot token is no longer in the page source: it lives in the
+        // Cloudflare Worker secrets, and the page posts to the proxy whose
+        // address is set in assets/js/lead-endpoint.js.
+        // ========================================================
 
         // Shorthand for dictionary lookups from JS. catalogue-i18n.js only holds a
         // handful of cart labels, so anything else comes from the main dictionary.
@@ -1262,6 +1258,14 @@
             phone: 'Телефон'
         };
 
+        // A Russian error string from the shared module, or the localised
+        // generic message when the reason is not worth showing to a visitor.
+        function leadErrorText(code) {
+            var L = window.LUMISTEK_LEAD_TEXTS_RU;
+            if (code && L && L[code]) return L[code];
+            return t('lead.error');
+        }
+
         async function submitForm(e) {
             e.preventDefault(); 
             const btn = document.getElementById('submit-btn');
@@ -1274,6 +1278,7 @@
             /* Пустые поля браузер отсекает сам (required), но пробелы он
                пустым значением не считает — проверяем здесь. */
             if (!name || !city || !phone) {
+                status.classList.remove('hidden');
                 status.innerText = t('lead.error');
                 status.className = 'text-sm text-center mt-4 text-red-400 block';
                 return;
@@ -1290,44 +1295,23 @@
             status.innerText = t('lead.sending');
             status.className = 'text-sm text-center mt-4 text-gray-400 block';
 
-            /* Таймаут — чтобы кнопка не висела вечно при плохой сети. */
-            let controller = null;
-            const opts = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ chat_id: chatId, text: text })
-            };
-            if (typeof window.AbortController === 'function') {
-                controller = new window.AbortController();
-                opts.signal = controller.signal;
-            }
-            let timer = window.setTimeout(function () {
-                if (controller) controller.abort();
-            }, LEAD_TIMEOUT_MS);
-            
-            try {
-                const response = await fetch(
-                    `https://api.telegram.org/bot${botToken}/sendMessage`, opts
-                );
-                window.clearTimeout(timer);
+            const result = await window.sendLead({
+                message: text,
+                name: name,
+                city: city,
+                phone: phone,
+                source: 'Сайт Lumistek (ОАЭ)'
+            });
 
-                /* Мало проверить response.ok: Telegram отвечает 200 и на
-                   отказ, а причину кладёт в description. */
-                const data = await response.json().catch(function () { return {}; });
-                if (!response.ok || !data || data.ok !== true) {
-                    throw new Error((data && data.description) || ('HTTP ' + response.status));
-                }
-
+            if (result && result.ok) {
                 status.innerText = t('lead.success');
                 status.className = 'text-sm text-center mt-4 text-green-400 block';
                 document.getElementById('lead-form').reset();
                 btn.innerText = t('lead.submit');
                 btn.disabled = false;
                 setTimeout(closeModal, 2500); 
-
-            } catch (error) {
-                window.clearTimeout(timer);
-                status.innerText = t('lead.error');
+            } else {
+                status.innerText = leadErrorText(result && result.error);
                 status.className = 'text-sm text-center mt-4 text-red-400 block';
                 btn.innerText = t('lead.submit');
                 btn.disabled = false;
@@ -1352,6 +1336,9 @@
     <script src="assets/js/offices.js"></script>
     <script src="assets/js/news.js"></script>
     <script src="assets/js/cart.js"></script>
+    <!-- Модуль отправки заявок через прокси. Грузится до логики страницы,
+         которая вызывает window.sendLead(). -->
+    <script src="assets/js/lead-endpoint.js"></script>
     <script>
         /* Cart counter in the header — lets the buyer see how much is picked already. */
         (function () {
