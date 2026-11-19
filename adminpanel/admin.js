@@ -1204,7 +1204,14 @@
         shorts: [],             /* [{ id, title, date }] */
         news: null,             /* news.json — только чтение */
         tab: 'products',
-        editing: null           /* товар, который сейчас в форме */
+        editing: null,          /* товар, который сейчас в форме */
+
+        /* Вкладка «Тексты»: страница и словарь живут раздельно, чтобы
+           переключение блоков не сбрасывало открытую строку. */
+        texts: null,            /* { page, file, sha, text, nodes, filter } */
+        textsEditing: null,     /* узел, открытый в форме */
+        textsDict: null,        /* { sha, text, entries, keys, filter } */
+        textsDictEditing: null  /* { key, lang } — что открыто в форме словаря */
     };
 
     function loadSettings() {
@@ -1526,6 +1533,7 @@
         { key: 'products', btn: '#tab-products', view: '#view-products' },
         { key: 'gallery',  btn: '#tab-gallery',  view: '#view-gallery'  },
         { key: 'offices',  btn: '#tab-offices',  view: '#view-offices'  },
+        { key: 'texts',    btn: '#tab-texts',    view: '#view-texts'    },
         { key: 'videos',   btn: '#tab-videos',   view: '#view-videos'   }
     ];
 
@@ -1556,6 +1564,7 @@
         if (name === 'products' && !state.catalog) loadCatalog();
         if (name === 'gallery' && !state.gallery) loadGallery();
         if (name === 'offices' && !state.offices) loadOffices();
+        if (name === 'texts' && !state.texts) loadTexts();
         if (name === 'videos' && !state.configText) loadVideos();
     }
 
@@ -2561,6 +2570,7 @@
         initTranslateButton();
         initGalleryTab();
         initOfficesTab();
+        initTextsTab();
         initVideosTab();
     }
 
@@ -2766,6 +2776,1299 @@
         } else {
             openPanel();
         }
+    }
+
+    /* ========================================================================
+     *  14. ВКЛАДКА «ТЕКСТЫ»
+     *
+     *  На сайте ОАЭ тексты живут в ДВУХ местах, и это главное отличие от
+     *  сайта РФ. Часть надписей лежит прямо в страницах, а почти всё
+     *  остальное — в словаре assets/js/i18n.js: один ключ задаёт сразу
+     *  арабскую и английскую версию, и lang.js подставляет его при загрузке.
+     *
+     *  Отсюда два блока вкладки:
+     *    «Тексты на страницах» — то, что лежит в HTML;
+     *    «Ключи словаря (AR и EN)» — 260 ключей, обе колонки рядом.
+     *
+     *  ТРИ ПРАВИЛА, КОТОРЫЕ НЕЛЬЗЯ НАРУШАТЬ:
+     *
+     *  1) ПЕРЕД ЗАПИСЬЮ ФАЙЛ ПЕРЕЧИТЫВАЕТСЯ. Кэш текста между сохранениями
+     *     запрещён: пока владелец писал, файл мог измениться (второй
+     *     администратор, наш же предыдущий коммит). Смещения пересчитываются
+     *     через LUMISTEK_TEXTS.reLocate(), положение ключа — заново по
+     *     свежему тексту словаря.
+     *  2) ВАЛИДАТОР ВЫЗЫВАЕТСЯ ДО PUT, а не после. Если он сказал «нет» —
+     *     записи нет, владелец видит причину по-русски.
+     *  3) ПОСЛЕ PUT ФАЙЛ ЧИТАЕТСЯ СНОВА и сверяется байт в байт. Это ловит
+     *     замену \n на \r\n, порчу base64 на арабском и двойную запись.
+     *     При расхождении — тост; ПОВТОРНОЙ ЗАПИСИ НЕ ДЕЛАЕМ.
+     *
+     *  КЛЮЧИ СЛОВАРЯ НЕ ПЕРЕИМЕНОВЫВАЮТСЯ И НЕ УДАЛЯЮТСЯ. Панель меняет
+     *  только значения. Проверка числа ключей до и после — обязательна:
+     *  удалённый ключ означает пропавшую надпись на сайте.
+     * ====================================================================== */
+
+    /* --- 14.1 Адреса ------------------------------------------------------- */
+
+    /*
+     * Страницы сайта. Предпросмотра внутри панели нет намеренно: iframe с
+     * srcdoc ломает абсолютные пути /assets/... и может ловиться CSP.
+     * Вместо него — кнопка «Открыть страницу на сайте».
+     */
+    var TEXTS_PAGES = {
+        ru: [
+            { key: 'index', file: 'index.html', title: 'Главная', url: '../index.html' },
+            { key: 'catalog', file: 'catalog.html', title: 'Каталог', url: '../catalog.html' },
+            { key: 'cart', file: 'cart.html', title: 'Корзина', url: '../cart.html' }
+        ],
+        uae: [
+            { key: 'index', file: 'index.html', title: 'Главная', url: '../index.html' },
+            { key: 'catalog', file: 'catalog.html', title: 'Каталог', url: '../catalog.html' },
+            { key: 'cart', file: 'cart.html', title: 'Корзина', url: '../cart.html' }
+        ]
+    };
+
+    /*
+     * На этих страницах ОАЭ заголовок вкладки браузера перезаписывает
+     * lang.js из словаря (по <body data-page="...">, см. lang.js 148–156),
+     * поэтому править его текстом бессмысленно: сохраним — а на сайте
+     * останется прежнее. Владельцу показываем ключ, а не строку.
+     */
+    var TEXTS_TITLE_KEY = {
+        'catalog.html': 'meta.title.catalog',
+        'cart.html': 'meta.title.cart'
+    };
+
+    /* Словарь ОАЭ: единственный файл, где живут все переводы. */
+    var TEXTS_I18N_FILE = 'assets/js/i18n.js';
+
+    /* Какой сайт правит эта панель. Выставляется в index.html и уже
+       используется в admin-auth.js — форка файлов из-за этого не делаем. */
+    function textsSite() {
+        var s = String(window.LUM_ADMIN_SITE || 'ru').toLowerCase();
+        return (s === 'uae') ? 'uae' : 'ru';
+    }
+
+    function textsPages() {
+        return TEXTS_PAGES[textsSite()] || TEXTS_PAGES.ru;
+    }
+
+    function textsPageByKey(key) {
+        var list = textsPages();
+        for (var i = 0; i < list.length; i++) if (list[i].key === key) return list[i];
+        return list[0];
+    }
+
+    function textsIsUae() {
+        return textsSite() === 'uae';
+    }
+
+    /* Ядро обязано быть загружено ДО admin.js. Нет его — говорим прямо,
+       а не падаем на первом же обращении. */
+    function textsCore() {
+        return window.LUMISTEK_TEXTS || null;
+    }
+
+    function textsI18nCore() {
+        return window.LUMISTEK_TEXTS_I18N || null;
+    }
+
+    /* --- 14.2 Загрузка страницы -------------------------------------------- */
+
+    /* Загружает выбранную страницу и строит список узлов. */
+    function loadTexts(pageKey, keepFilters) {
+        var core = textsCore();
+        if (!core) {
+            toast('Не загрузился модуль правки текстов (adminpanel/texts.js). ' +
+                'Обновите страницу; если не помогло — сообщите разработчику.', 'err');
+            return Promise.resolve();
+        }
+
+        var page = textsPageByKey(pageKey || textLastPage() || 'index');
+        var site = textsSite();
+        textsLastPage = page.key;
+
+        return withBusy('Читаем тексты страницы…', function () {
+            /* Кэш текста между сохранениями запрещён, но и «залипший» файл
+               тоже плохо: GitHub отдаёт содержимое с задержкой кэша, и владелец
+               увидел бы старую версию сразу после своей же правки. Поэтому
+               читаем с обходом кэша. */
+            return readFileFresh(page.file).then(function (cur) {
+                if (!cur.exists || cur.text === null) {
+                    throw new Error('Файл ' + page.file + ' не найден в репозитории. ' +
+                        'Проверьте ветку в разделе «Подключение».');
+                }
+
+                var parsed = core.textNodes(cur.text, { site: site });
+                state.texts = {
+                    page: page.key,
+                    file: page.file,
+                    sha: cur.sha,
+                    text: cur.text,
+                    nodes: parsed.nodes,
+                    problems: parsed.problems,
+                    filter: (keepFilters && state.texts)
+                        ? state.texts.filter
+                        : { zone: '', kind: '', q: '' },
+                    loadedAt: Date.now()
+                };
+                state.textsEditing = null;
+
+                renderTextsZones();
+                renderTextsPageHint(page);
+                renderTextsList();
+                renderTextsEditor();
+            });
+        }).catch(function (e) {
+            toast(textsErrorText(e, 'Не удалось прочитать тексты страницы.'), 'err');
+            /* Даже при ошибке показываем состояние «список пуст», а не
+               вечное «Читаем страницу…». Кэш сбрасываем: при следующем
+               открытии вкладки файл перечитается. */
+            state.texts = null;
+            state.textsEditing = null;
+            renderTextsZones();
+            renderTextsList();
+            renderTextsEditor();
+        });
+    }
+
+    /* Чтение с обходом кэша: те же readFile, но с меткой времени в запросе. */
+    function readFileFresh(path) {
+        return readFile(path, true);
+    }
+
+    /* Понятный русский текст вместо кода ошибки. */
+    function textsErrorText(e, fallback) {
+        var msg = (e && e.message) ? String(e.message) : '';
+        if (!msg) return fallback;
+        if (/ошибк|не удалось|отказ|не сохран|пароль|токен|не найден|конфликт|обрыв|запись/i.test(msg)) return msg;
+        return fallback + ' ' + msg;
+    }
+
+    /* Подсказка над списком: где на самом деле правится заголовок вкладки.
+       На ОАЭ catalog.html и cart.html lang.js перезаписывает <title> из
+       словаря — правка текста внутри страницы не доживёт до показа. */
+    function renderTextsPageHint(page) {
+        var el = $('#texts-page-hint');
+        if (!el) return;
+
+        var key = TEXTS_TITLE_KEY[page.file];
+        if (!textsIsUae() || !key) {
+            el.textContent = '';
+            el.classList.add('hidden');
+            return;
+        }
+
+        var hasKey = false;
+        if (state.textsDict) {
+            var list = state.textsDict.keys;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].key === key) { hasKey = true; break; }
+            }
+        }
+
+        el.textContent = 'Заголовок вкладки этой страницы задаётся в словаре — ключ ' + key +
+            (hasKey ? '.' : ' (в словаре его пока нет, сейчас показывается общий meta.title).') +
+            ' Правка текста внутри страницы здесь не сработает: её перезапишет словарь.';
+        el.classList.remove('hidden');
+    }
+
+    /* --- 14.3 Список текстов страницы -------------------------------------- */
+
+    /* Заполняет фильтр разделов: только те, что реально есть на странице. */
+    function renderTextsZones() {
+        var sel = $('#texts-zone');
+        if (!sel || !state.texts) return;
+
+        var seen = {};
+        var order = [];
+        state.texts.nodes.forEach(function (n) {
+            var title = n.labelMain;
+            if (seen[title]) { seen[title].count++; return; }
+            seen[title] = { title: title, count: 1 };
+            order.push(seen[title]);
+        });
+
+        var current = state.texts.filter.zone || '';
+        var html = ['<option value="">Все разделы (' + state.texts.nodes.length + ')</option>'];
+        order.forEach(function (z) {
+            html.push('<option value="' + esc(z.title) + '">' +
+                esc(z.title) + ' — ' + z.count + '</option>');
+        });
+        sel.innerHTML = html.join('');
+        sel.value = current;
+    }
+
+    /* Отбирает узлы по текущим фильтрам. */
+    function textsFiltered() {
+        if (!state.texts) return [];
+        var f = state.texts.filter;
+        var q = String(f.q || '').trim().toLowerCase();
+
+        return state.texts.nodes.filter(function (n) {
+            if (f.zone && n.labelMain !== f.zone) return false;
+
+            if (f.kind === 'seo') {
+                if (!n.seo) return false;
+            } else if (f.kind === 'i18n') {
+                if (!/^data-i18n/.test(n.attr || '')) return false;
+            } else if (f.kind) {
+                if (n.seo) return false;
+                if (f.kind === 'text') {
+                    if (n.kind !== 'text') return false;
+                } else if (n.attr !== f.kind) {
+                    return false;
+                }
+            }
+
+            if (q) {
+                var hay = (n.value + ' ' + n.label + ' ' + n.labelMain).toLowerCase();
+                if (hay.indexOf(q) < 0) return false;
+            }
+            return true;
+        });
+    }
+
+    /* Рисует список строк. */
+    function renderTextsList() {
+        var list = $('#texts-list');
+        var empty = $('#texts-empty');
+        var status = $('#texts-status');
+        if (!list) return;
+
+        if (!state.texts) {
+            list.innerHTML = '';
+            if (status) status.textContent = 'Читаем страницу…';
+            if (empty) empty.classList.add('hidden');
+            return;
+        }
+
+        var nodes = textsFiltered();
+        var page = textsPageByKey(state.texts.page);
+
+        if (status) {
+            status.textContent = page.title + ' · ' + page.file + ' · показано ' +
+                nodes.length + ' из ' + state.texts.nodes.length + ' строк';
+        }
+        if (empty) empty.classList.toggle('hidden', nodes.length > 0);
+
+        if (!nodes.length) {
+            list.innerHTML = '';
+            return;
+        }
+
+        var rows = [];
+        var lastZone = null;
+
+        nodes.forEach(function (n) {
+            /* Заголовок группы при смене раздела: владелец узнаёт страницу
+               сверху вниз, как она свёрстана. */
+            if (n.labelMain !== lastZone) {
+                lastZone = n.labelMain;
+                rows.push('<div class="px-3 pt-3 pb-1 text-[11px] uppercase tracking-wide text-gray-500">' +
+                    esc(n.labelMain) + '</div>');
+            }
+
+            var badge = n.kind === 'attr' ? n.attr : 'текст';
+            var seoMark = n.seo
+                ? ' <span class="text-amber-400" title="Влияет на выдачу в поиске">SEO</span>'
+                : '';
+            var sub = n.labelSub ? ' · ' + n.labelSub : '';
+            var active = state.textsEditing && state.textsEditing.nodeId === n.id;
+            var full = String(n.value).replace(/\s+/g, ' ').trim();
+            var short = full.length > 80 ? full.slice(0, 80) + '…' : full;
+
+            rows.push(
+                '<button type="button" data-text-key="' + esc(n.id) + '"' +
+                ' class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors' +
+                (active ? ' bg-brand-cyan/10' : '') + '">' +
+                '<span class="flex items-start gap-2">' +
+                '<span class="shrink-0 mt-0.5 text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-gray-300 font-mono">' +
+                esc(badge) + '</span>' +
+                '<span class="min-w-0 flex-1">' +
+                '<span class="block text-sm text-white break-words" title="' + esc(full) + '">' +
+                esc(short) + seoMark + '</span>' +
+                '<span class="block text-[11px] text-gray-500 mt-0.5">' + esc(sub) +
+                ' · строка ' + n.line + '</span>' +
+                '</span></span></button>'
+            );
+        });
+
+        list.innerHTML = rows.join('');
+    }
+
+    /* --- 14.4 Форма правки текста страницы --------------------------------- */
+
+    /* Открывает строку в форме справа. */
+    function openTextEditor(nodeId) {
+        if (!state.texts) return;
+        var node = findTextNode(nodeId);
+        if (!node) return;
+
+        state.textsEditing = {
+            nodeId: node.id,
+            original: node.value,
+            draft: node.value
+        };
+
+        renderTextsList();
+        renderTextsEditor();
+    }
+
+    /* Перерисовывает правую панель. */
+    function renderTextsEditor() {
+        var core = textsCore();
+        var box = $('#texts-editor-body');
+        var placeholder = $('#texts-editor-empty');
+        if (!box || !placeholder) return;
+
+        var editing = state.textsEditing;
+        var node = (editing && state.texts) ? findTextNode(editing.nodeId) : null;
+
+        if (!node) {
+            box.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            return;
+        }
+
+        placeholder.classList.add('hidden');
+        box.classList.remove('hidden');
+
+        var input = $('#texts-editor-input');
+        if (input && input.value !== editing.draft) input.value = editing.draft;
+
+        var kind = $('#texts-editor-kind');
+        if (kind) kind.textContent = core ? core.kindLabel(node) : node.kind;
+
+        var page = textsPageByKey(state.texts.page);
+
+        var where = $('#texts-editor-where');
+        if (where) where.textContent = page.title + ' · строка ' + node.line;
+
+        var label = $('#texts-editor-label');
+        if (label) label.textContent = node.label;
+
+        var open = $('#texts-editor-open');
+        if (open) {
+            open.classList.remove('hidden');
+            open.setAttribute('data-url', page.url);
+        }
+
+        var hint = $('#texts-editor-hint');
+        if (hint) hint.innerHTML = textsHintFor(node);
+
+        updateTextsCounter();
+        showTextsProblems(null);
+    }
+
+    function findTextNode(id) {
+        if (!state.texts) return null;
+        for (var i = 0; i < state.texts.nodes.length; i++) {
+            if (state.texts.nodes[i].id === id) return state.texts.nodes[i];
+        }
+        return null;
+    }
+
+    /* Подсказка под полем: что именно можно и чего нельзя в этом месте. */
+    function textsHintFor(node) {
+        var parts = [];
+        if (node.seo) {
+            parts.push('<b class="text-amber-300">Осторожно: это SEO.</b> Такой текст виден ' +
+                'поисковику, а не посетителю. Неудачная правка может снизить позиции сайта.');
+        }
+        if (/^data-i18n/.test(node.attr || '')) {
+            parts.push('Это ключ словаря. Менять его здесь не нужно — перейдите в блок ' +
+                '<b class="text-gray-400">«Ключи словаря (AR и EN)»</b>, там обе языковые версии ' +
+                'рядом друг с другом.');
+        }
+        if (node.kind === 'attr') {
+            parts.push('Это подпись к элементу, а не текст на странице: посетитель увидит её ' +
+                'в подсказке, в поле ввода или в озвучке для незрячих.');
+        }
+        if (/<br/i.test(node.value)) {
+            parts.push('Здесь допустим перенос <b class="text-gray-400">&lt;br&gt;</b> — он уже есть ' +
+                'в тексте. Другие теги вставлять нельзя.');
+        } else if (node.kind === 'text') {
+            parts.push('Теги в обычный текст вставлять нельзя. Символ &lt; пишется как &amp;lt;.');
+        }
+        return parts.join(' ');
+    }
+
+    /* Счётчик символов под полем. */
+    function updateTextsCounter() {
+        var input = $('#texts-editor-input');
+        var counter = $('#texts-editor-count');
+        if (!input || !counter) return;
+
+        var value = String(input.value || '');
+        var original = state.textsEditing ? String(state.textsEditing.original || '') : '';
+        var delta = value.length - original.length;
+        var sign = delta > 0 ? '+' : '';
+        counter.textContent = value.length + ' символов' +
+            (delta !== 0 ? ' (' + sign + delta + ' к прежнему)' : '');
+    }
+
+    /* Показывает проблемы валидатора списком. */
+    function showTextsProblems(problems) {
+        paintProblems($('#texts-editor-problems'), problems);
+    }
+
+    /* Общая отрисовка проблем: одинаково для текстов и для словаря. */
+    function paintProblems(box, problems) {
+        if (!box) return;
+
+        if (!problems || !problems.length) {
+            box.classList.add('hidden');
+            box.innerHTML = '';
+            return;
+        }
+
+        var rows = [];
+        problems.forEach(function (p) {
+            var isWarn = (p.severity === 'warn' || p.severity === 'info');
+            var cls = isWarn
+                ? 'border-amber-500/40 bg-amber-500/10 text-amber-100'
+                : 'border-red-500/40 bg-red-500/10 text-red-100';
+            var head = isWarn ? 'Обратите внимание' : 'Запись отменена';
+            rows.push('<div class="px-3 py-2 rounded-lg border text-[12px] leading-relaxed ' + cls + '">' +
+                '<b>' + head + '.</b> ' + esc(p.message) + '</div>');
+        });
+
+        box.innerHTML = rows.join('');
+        box.classList.remove('hidden');
+    }
+
+    /* --- 14.5 Сохранение текста страницы ----------------------------------- */
+
+    /*
+     * Поток сохранения — ровно в этом порядке, нарушать нельзя:
+     *
+     *   перечитать файл → reLocate → applyEdit (со всеми проверками)
+     *   → PUT → перечитать и сверить байт в байт → сбросить кэш и список
+     *
+     * Любой шаг может отменить запись. Ни один шаг не пишет, пока предыдущий
+     * не сказал «можно».
+     */
+    function saveTextEdit(andNext) {
+        var core = textsCore();
+        if (!core) {
+            toast('Не загрузился модуль правки текстов (adminpanel/texts.js). ' +
+                'Обновите страницу и попробуйте снова.', 'err');
+            return Promise.resolve();
+        }
+
+        var editing = state.textsEditing;
+        if (!editing || !state.texts) return Promise.resolve();
+
+        var node = findTextNode(editing.nodeId);
+        if (!node) {
+            toast('Строка не найдена в списке. Обновите список и выберите её заново.', 'err');
+            return Promise.resolve();
+        }
+
+        var input = $('#texts-editor-input');
+        var draft = input ? String(input.value) : String(editing.draft || '');
+        var file = state.texts.file;
+        var savedPage = state.texts.page;
+        var site = textsSite();
+
+        /* Ничего не изменилось — нечего коммитить. */
+        if (draft.trim() === node.value) {
+            toast('Текст не изменился — коммит не нужен.', 'info');
+            return Promise.resolve();
+        }
+
+        var savedNodeLabel = node.label;
+        showTextsProblems(null);
+
+        return withBusy('Проверяем и сохраняем…', function () {
+            /* ШАГ 1. Свежий текст и sha. Кэш state.texts.text здесь не годится:
+               пока владелец писал, файл мог измениться. */
+            return readFileFresh(file).then(function (cur) {
+                if (!cur.exists || cur.text === null) {
+                    throw new Error('Файл ' + file + ' не найден в репозитории.');
+                }
+
+                /* ШАГ 2. Ищем узел заново. Неоднозначно — не пишем. */
+                var located = core.reLocate(cur.text, node, { site: site });
+                if (!located) {
+                    throw new Error('Страница изменилась с тех пор, как вы открыли список: ' +
+                        'этот текст найти не удалось однозначно. Нажмите «Обновить список» ' +
+                        'и найдите строку заново. Запись не выполнялась.');
+                }
+
+                /* ШАГ 3. Единственная мутация — один сплайс по смещению,
+                   и сразу все проверки. */
+                var result = core.applyEdit(cur.text, located, draft, { site: site });
+
+                if (!result.ok) {
+                    /* Показываем полную картину в форме, а тост служит
+                       сигналом: подробности — рядом с полем. */
+                    showTextsProblems(result.problems);
+                    var first = result.errors.length ? result.errors[0] : result.problems[0];
+                    throw new Error(first.message);
+                }
+
+                /* Ничего не записалось, потому что и нечего было менять. */
+                if (result.text === cur.text) {
+                    return { unchanged: true };
+                }
+
+                var message = 'admin: текст в ' + file + ' (' + shortCommitTitle(located) + ')';
+
+                /* ШАГ 4. Один коммит на одно сохранение. */
+                return writeFile(file, result.text, cur.sha, message).then(function () {
+                    /* ШАГ 5. Сверка после записи, байт в байт. Повторного PUT
+                       не делаем ни при каком результате. */
+                    return readFileFresh(file).then(function (check) {
+                        var same = check && check.text === result.text;
+                        return { sent: result.text, same: !!same, node: located };
+                    });
+                });
+            }).then(function (done) {
+                if (!done) return;
+                if (done.unchanged) {
+                    toast('Текст не изменился — коммит не нужен.', 'info');
+                    return;
+                }
+
+                /* Кэш сбрасываем всегда: следующее открытие перечитает файл. */
+                state.texts = null;
+                state.textsEditing = null;
+
+                if (!done.same) {
+                    /* Файл записан, но вернулся другим. Это НЕ повод писать
+                       снова — только честно сказать владельцу. */
+                    toast('Файл записан, но при чтении вернулся другой текст. ' +
+                        'Скорее всего, проблема с кодировкой или переводом строк — ' +
+                        'сообщите разработчику. Повторно записывать не нужно.', 'err');
+                    renderTextsList();
+                    renderTextsEditor();
+                    return;
+                }
+
+                toast('Сохранено: «' + shortLabel(savedNodeLabel) + '». ' +
+                    'Сайт обновится примерно через минуту.', 'ok');
+
+                return loadTexts(savedPage, false).then(function () {
+                    if (!andNext) return;
+
+                    /* «Сохранить и дальше»: переходим к следующей строке
+                       того же списка, чтобы не искать её мышью. */
+                    var nodes = textsFiltered();
+                    var nextId = null;
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (nodes[i].label === savedNodeLabel) {
+                            if (nodes[i + 1]) nextId = nodes[i + 1].id;
+                            break;
+                        }
+                    }
+                    if (nextId) openTextEditor(nextId);
+                    else {
+                        var all = state.texts ? state.texts.nodes : [];
+                        if (all.length) openTextEditor(all[0].id);
+                    }
+                });
+            });
+        }).catch(function (e) {
+            toast(textsErrorText(e, 'Не удалось сохранить правку.'), 'err');
+        });
+    }
+
+    /*
+     * Последняя открытая страница. Нужна как запасной вариант: после успешной
+     * записи state.texts сбрасывается, а знать, какую страницу перечитать,
+     * всё равно надо.
+     */
+    var textsLastPage = 'index';
+    function textLastPage() { return textsLastPage; }
+
+    /* Заголовок коммита: короткое имя правленого текста. */
+    function shortCommitTitle(node) {
+        var v = String((node && node.value) || '').replace(/\s+/g, ' ').trim();
+        if (v.length > 48) v = v.slice(0, 48).replace(/\s+\S*$/, '') + '…';
+        return '«' + v + '»';
+    }
+
+    /* Подпись для тоста: не длиннее 60 символов. */
+    function shortLabel(s) {
+        var v = String(s || '').replace(/\s+/g, ' ').trim();
+        if (v.length > 60) v = v.slice(0, 60) + '…';
+        return v;
+    }
+
+    /* --- 14.6 Словарь: загрузка -------------------------------------------- */
+
+    /*
+     * Словарь читается ОДИН раз на открытие вкладки. Список ключей строится
+     * из словаря, а не из страниц: иначе ключи, которые подставляет только
+     * JS (26 штук), в список бы не попали, и владелец не смог бы их найти.
+     *
+     * «Где используется» считается по всем трём страницам сразу — для этого
+     * они и читаются: искать подстроку data-i18n="ключ" в тексте страницы
+     * дешевле и точнее, чем разбирать разметку второй раз.
+     */
+    function loadTextsDict() {
+        var i18n = textsI18nCore();
+        if (!i18n) {
+            toast('Не загрузился модуль словаря (adminpanel/texts-i18n.js). ' +
+                'Обновите страницу; если не помогло — сообщите разработчику.', 'err');
+            return Promise.resolve();
+        }
+
+        return withBusy('Читаем словарь и страницы…', function () {
+            return readFileFresh(TEXTS_I18N_FILE).then(function (cur) {
+                if (!cur.exists || cur.text === null) {
+                    throw new Error('Файл ' + TEXTS_I18N_FILE + ' не найден в репозитории. ' +
+                        'Проверьте ветку в разделе «Подключение».');
+                }
+
+                var parsed = i18n.parseI18n(cur.text);
+                if (parsed.problems && parsed.problems.length) {
+                    /* Словарь не разобрался — показываем как есть, но без
+                       права записи: если не поняли структуру, писать нельзя. */
+                    throw new Error('Словарь прочитан не полностью (' +
+                        parsed.problems[0].message + '). Запись отключена, ' +
+                        'сообщите разработчику.');
+                }
+
+                /* Страницы читаем пачкой: нужно только «где используется». */
+                var pages = textsPages();
+                var reads = pages.map(function (p) {
+                    return readFileFresh(p.file).then(function (r) {
+                        return { file: p.file, text: (r && r.exists) ? r.text : '' };
+                    }).catch(function () {
+                        return { file: p.file, text: '' };
+                    });
+                });
+
+                return Promise.all(reads).then(function (loaded) {
+                    var byFile = {};
+                    loaded.forEach(function (r) { byFile[r.file] = r.text; });
+
+                    var usage = i18n.collectUsage(byFile);
+                    var keys = i18n.buildKeyList(parsed, usage);
+
+                    state.textsDict = {
+                        sha: cur.sha,
+                        text: cur.text,
+                        entries: parsed.entries,
+                        keys: keys,
+                        filter: (state.textsDict && state.textsDict.filter)
+                            ? state.textsDict.filter
+                            : { section: '', q: '' },
+                        loadedAt: Date.now()
+                    };
+                    state.textsDictEditing = null;
+
+                    renderTextsDictSections();
+                    renderTextsDictNote();
+                    renderTextsDictList();
+                    renderTextsDictEditor();
+                    renderTextsPageHint(textsPageByKey(textLastPage()));
+                });
+            });
+        }).catch(function (e) {
+            toast(textsErrorText(e, 'Не удалось прочитать словарь переводов.'), 'err');
+            state.textsDict = null;
+            state.textsDictEditing = null;
+            renderTextsDictSections();
+            renderTextsDictList();
+            renderTextsDictEditor();
+        });
+    }
+
+    /* Строка-сводка под фильтрами: сколько ключей и сколько из них из скрипта. */
+    function renderTextsDictNote() {
+        var note = $('#texts-dict-note');
+        if (!note || !state.textsDict) return;
+
+        var keys = state.textsDict.keys;
+        var jsOnly = 0;
+        var used = 0;
+        keys.forEach(function (k) {
+            if (k.jsOnly) jsOnly++;
+            if (k.usage && k.usage.length) used++;
+        });
+
+        note.textContent = 'Всего ключей: ' + keys.length +
+            ' · на страницах: ' + used +
+            ' · только из скрипта: ' + jsOnly +
+            ' (их правят здесь же, на страницах их не найти).';
+    }
+
+    /* Заполняет фильтр разделов словаря. */
+    function renderTextsDictSections() {
+        var sel = $('#texts-dict-section');
+        if (!sel || !state.textsDict) return;
+
+        var seen = {};
+        var order = [];
+        state.textsDict.keys.forEach(function (k) {
+            if (seen[k.section]) return;
+            seen[k.section] = true;
+            order.push({ id: k.section, title: k.sectionTitle });
+        });
+
+        var current = state.textsDict.filter.section || '';
+        var html = ['<option value="">Все разделы (' + state.textsDict.keys.length + ')</option>'];
+        order.forEach(function (s) {
+            html.push('<option value="' + esc(s.id) + '">' + esc(s.title) + '</option>');
+        });
+        sel.innerHTML = html.join('');
+        sel.value = current;
+    }
+
+    /* Отбирает ключи по фильтрам словаря. */
+    function textsDictFiltered() {
+        if (!state.textsDict) return [];
+        var f = state.textsDict.filter;
+        var q = String(f.q || '').trim().toLowerCase();
+
+        return state.textsDict.keys.filter(function (k) {
+            if (f.section && k.section !== f.section) return false;
+            if (!q) return true;
+
+            var hay = (k.key + ' ' + k.ar + ' ' + k.en + ' ' +
+                (k.usage || []).join(' ')).toLowerCase();
+            return hay.indexOf(q) >= 0;
+        });
+    }
+
+    /* Рисует список ключей словаря. */
+    function renderTextsDictList() {
+        var list = $('#texts-dict-list');
+        var empty = $('#texts-dict-empty');
+        var status = $('#texts-dict-status');
+        if (!list) return;
+
+        if (!state.textsDict) {
+            list.innerHTML = '';
+            if (status) status.textContent = 'Читаем словарь…';
+            if (empty) empty.classList.add('hidden');
+            return;
+        }
+
+        var keys = textsDictFiltered();
+
+        if (status) {
+            status.textContent = 'Показано ' + keys.length + ' из ' +
+                state.textsDict.keys.length + ' ключей';
+        }
+        if (empty) empty.classList.toggle('hidden', keys.length > 0);
+
+        if (!keys.length) {
+            list.innerHTML = '';
+            return;
+        }
+
+        var rows = [];
+        var lastSection = null;
+
+        keys.forEach(function (k) {
+            if (k.section !== lastSection) {
+                lastSection = k.section;
+                rows.push('<div class="px-3 pt-3 pb-1 text-[11px] uppercase tracking-wide text-gray-500">' +
+                    esc(k.sectionTitle) + '</div>');
+            }
+
+            var active = state.textsDictEditing && state.textsDictEditing.key === k.key;
+            var where = (k.usage && k.usage.length)
+                ? k.usage.join(', ')
+                : (k.note || 'используется из скрипта');
+            var arShort = String(k.ar || '').length > 60
+                ? String(k.ar).slice(0, 60) + '…'
+                : String(k.ar || '');
+            var enShort = String(k.en || '').length > 60
+                ? String(k.en).slice(0, 60) + '…'
+                : String(k.en || '');
+
+            rows.push(
+                '<button type="button" data-text-key="' + esc(k.key) + '"' +
+                ' class="w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors' +
+                (active ? ' bg-brand-cyan/10' : '') + '">' +
+                '<span class="block font-mono text-[11px] text-brand-cyan break-all">' +
+                esc(k.key) + '</span>' +
+                '<span class="block text-sm text-white mt-1 break-words" dir="rtl">' +
+                esc(arShort) + '</span>' +
+                '<span class="block text-[12px] text-gray-400 mt-0.5 break-words">' +
+                esc(enShort) + '</span>' +
+                '<span class="block text-[11px] text-gray-500 mt-0.5">' +
+                esc(where) + '</span>' +
+                '</button>'
+            );
+        });
+
+        list.innerHTML = rows.join('');
+    }
+
+    /* --- 14.7 Словарь: форма правки ---------------------------------------- */
+
+    /* Открывает ключ: показывает обе колонки — арабскую и английскую. */
+    function openTextsDictKey(key) {
+        if (!state.textsDict) return;
+        var rec = findDictKey(key);
+        if (!rec) return;
+
+        state.textsDictEditing = {
+            key: key,
+            originalAr: rec.ar,
+            originalEn: rec.en,
+            draftAr: rec.ar,
+            draftEn: rec.en
+        };
+
+        renderTextsDictList();
+        renderTextsDictEditor();
+    }
+
+    function findDictKey(key) {
+        if (!state.textsDict) return null;
+        for (var i = 0; i < state.textsDict.keys.length; i++) {
+            if (state.textsDict.keys[i].key === key) return state.textsDict.keys[i];
+        }
+        return null;
+    }
+
+    /* Перерисовывает правую панель словаря. */
+    function renderTextsDictEditor() {
+        var box = $('#texts-dict-editor-body');
+        var placeholder = $('#texts-dict-editor-empty');
+        if (!box || !placeholder) return;
+
+        var editing = state.textsDictEditing;
+        var rec = editing ? findDictKey(editing.key) : null;
+
+        if (!rec) {
+            box.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            return;
+        }
+
+        placeholder.classList.add('hidden');
+        box.classList.remove('hidden');
+
+        var ar = $('#texts-dict-editor-ar');
+        if (ar && ar.value !== editing.draftAr) ar.value = editing.draftAr;
+
+        var en = $('#texts-dict-editor-en');
+        if (en && en.value !== editing.draftEn) en.value = editing.draftEn;
+
+        var section = $('#texts-dict-editor-section');
+        if (section) section.textContent = rec.sectionTitle;
+
+        var keyEl = $('#texts-dict-editor-key');
+        if (keyEl) keyEl.textContent = rec.key;
+
+        var where = $('#texts-dict-editor-where');
+        if (where) {
+            where.textContent = (rec.usage && rec.usage.length)
+                ? 'на страницах: ' + rec.usage.join(', ')
+                : 'используется из скрипта';
+        }
+
+        var note = $('#texts-dict-editor-note');
+        if (note) {
+            if (rec.jsOnly) {
+                note.textContent = 'Этот ключ подставляет скрипт (например, заголовок вкладки ' +
+                    'или надпись, собранная кодом). На страницах его нет — только здесь.';
+                note.classList.remove('hidden');
+            } else {
+                note.textContent = '';
+                note.classList.add('hidden');
+            }
+        }
+
+        var hint = $('#texts-dict-editor-hint');
+        if (hint) hint.innerHTML = textsDictHintFor(rec);
+
+        paintProblems($('#texts-dict-editor-problems'), null);
+    }
+
+    /* Подсказка под полями словаря. */
+    function textsDictHintFor(rec) {
+        var parts = [];
+        parts.push('Ключ <b class="text-gray-400">' + esc(rec.key) + '</b> переименовать нельзя — ' +
+            'на него ссылаются страницы, и сайт молча потеряет надпись.');
+        if (rec.isHtml) {
+            parts.push('В этом значении допустим перенос <b class="text-gray-400">&lt;br&gt;</b>. ' +
+                'Другие теги вставлять нельзя.');
+        } else {
+            parts.push('Теги вставлять нельзя. Символ &lt; не допускается; перенос строки — ' +
+                'только если он уже есть в тексте.');
+        }
+        return parts.join(' ');
+    }
+
+    /* --- 14.8 Словарь: сохранение ------------------------------------------ */
+
+    /*
+     * Порядок тот же, что у текстов страницы, но вместо reLocate —
+     * повторный поиск ключа по СВЕЖЕМУ тексту словаря. Если ключа в свежем
+     * файле нет (его переименовали вручную) — не пишем: мы бы либо создали
+     * дубликат, либо затёрли чужую правку.
+     */
+    function saveTextsDictEdit() {
+        var i18n = textsI18nCore();
+        if (!i18n) {
+            toast('Не загрузился модуль словаря (adminpanel/texts-i18n.js). ' +
+                'Обновите страницу и попробуйте снова.', 'err');
+            return Promise.resolve();
+        }
+
+        var editing = state.textsDictEditing;
+        if (!editing || !state.textsDict) return Promise.resolve();
+
+        var rec = findDictKey(editing.key);
+        if (!rec) {
+            toast('Ключ не найден в списке. Обновите словарь и выберите его заново.', 'err');
+            return Promise.resolve();
+        }
+
+        var arEl = $('#texts-dict-editor-ar');
+        var enEl = $('#texts-dict-editor-en');
+        var draftAr = arEl ? String(arEl.value) : String(editing.draftAr || '');
+        var draftEn = enEl ? String(enEl.value) : String(editing.draftEn || '');
+
+        /* Порядок важен: сначала арабский, потом английский. Если правка
+           арабского не прошла валидацию, английскую уже не пишем — иначе
+           половина ключа обновится, а половина нет. */
+        var changedAr = draftAr !== editing.originalAr;
+        var changedEn = draftEn !== editing.originalEn;
+
+        if (!changedAr && !changedEn) {
+            toast('Перевод не изменился — коммит не нужен.', 'info');
+            return Promise.resolve();
+        }
+
+        var savedKey = rec.key;
+        paintProblems($('#texts-dict-editor-problems'), null);
+
+        return withBusy('Проверяем и сохраняем перевод…', function () {
+            return readFileFresh(TEXTS_I18N_FILE).then(function (cur) {
+                if (!cur.exists || cur.text === null) {
+                    throw new Error('Файл ' + TEXTS_I18N_FILE + ' не найден в репозитории.');
+                }
+
+                /* Сколько ключей было — столько должно остаться. Это страховка
+                   от случайного удаления: правка значения не может менять
+                   число ключей. */
+                var before = i18n.parseI18n(cur.text);
+                if (before.problems && before.problems.length) {
+                    throw new Error('Словарь прочитан не полностью (' +
+                        before.problems[0].message + '). Запись отменена.');
+                }
+                var beforeCount = before.entries.length;
+
+                var next = cur.text;
+                var applied = [];
+
+                if (changedAr) {
+                    var resAr = i18n.applyI18nEdit(next, savedKey, 'ar', draftAr);
+                    if (!resAr.ok) {
+                        showDictProblems(resAr.problems);
+                        throw new Error(firstDictMessage(resAr));
+                    }
+                    next = resAr.text;
+                    applied.push('ar');
+                }
+
+                if (changedEn) {
+                    /* Пятый аргумент — запись ключа из СТАРОГО разбора: по ней
+                       ядро находит позицию точнее, чем поиском по имени. */
+                    var resEn = i18n.applyI18nEdit(next, savedKey, 'en', draftEn);
+                    if (!resEn.ok) {
+                        showDictProblems(resEn.problems);
+                        throw new Error(firstDictMessage(resEn));
+                    }
+                    next = resEn.text;
+                    applied.push('en');
+                }
+
+                /* Проверка перед записью: число ключей не изменилось. */
+                var after = i18n.parseI18n(next);
+                if (after.problems && after.problems.length) {
+                    throw new Error('После правки словарь перестал читаться (' +
+                        after.problems[0].message + '). Запись отменена.');
+                }
+                if (after.entries.length !== beforeCount) {
+                    throw new Error('После правки в словаре ' + after.entries.length +
+                        ' ключей вместо ' + beforeCount + '. Так надписи на сайте пропадут, ' +
+                        'поэтому запись отменена.');
+                }
+
+                /* Финальная проверка самим ядром словаря: передаём сразу оба
+                   языка, которые меняли, — ядро проверит, что изменились
+                   ровно эти два значения и что набор ключей остался прежним. */
+                var expect = { key: savedKey };
+                if (changedAr) expect.ar = draftAr;
+                if (changedEn) expect.en = draftEn;
+
+                var check = i18n.validateI18nEdit(cur.text, next, expect);
+                if (!check.ok) {
+                    showDictProblems(check.problems);
+                    throw new Error(firstDictMessage(check));
+                }
+
+                if (next === cur.text) {
+                    return { unchanged: true };
+                }
+
+                var message = 'admin: перевод ' + savedKey + ' (' + applied.join('+') + ')';
+
+                return writeFile(TEXTS_I18N_FILE, next, cur.sha, message).then(function () {
+                    /* Сверка после записи: арабский текст в base64 легко
+                       портится, а увидит это только посетитель. */
+                    return readFileFresh(TEXTS_I18N_FILE).then(function (reread) {
+                        var same = reread && reread.text === next;
+                        return { same: !!same };
+                    });
+                });
+            }).then(function (done) {
+                if (!done) return;
+                if (done.unchanged) {
+                    toast('Перевод не изменился — коммит не нужен.', 'info');
+                    return;
+                }
+
+                state.textsDict = null;
+                state.textsDictEditing = null;
+
+                if (!done.same) {
+                    toast('Файл записан, но при чтении вернулся другой текст. ' +
+                        'Скорее всего, проблема с кодировкой арабского — сообщите разработчику. ' +
+                        'Повторно записывать не нужно.', 'err');
+                    renderTextsDictList();
+                    renderTextsDictEditor();
+                    return;
+                }
+
+                toast('Сохранено: «' + shortLabel(savedKey) + '». ' +
+                    'Сайт обновится примерно через минуту.', 'ok');
+
+                return loadTextsDict();
+            });
+        }).catch(function (e) {
+            toast(textsErrorText(e, 'Не удалось сохранить перевод.'), 'err');
+        });
+    }
+
+    /* Показывает проблемы валидатора словаря в его панели. */
+    function showDictProblems(problems) {
+        paintProblems($('#texts-dict-editor-problems'), problems);
+    }
+
+    /* Первое сообщение из результата валидатора — для тоста. */
+    function firstDictMessage(res) {
+        if (res && res.errors && res.errors.length) return res.errors[0].message;
+        if (res && res.problems && res.problems.length) return res.problems[0].message;
+        return 'Правка не прошла проверку. Запись отменена.';
+    }
+
+    /* Переключение блоков «страницы / словарь». */
+    function showTextsBlock(which) {
+        var pagesPane = $('#texts-pages-pane');
+        var dictPane = $('#texts-dict-pane');
+        var pagesBtn = $('#texts-block-pages');
+        var dictBtn = $('#texts-block-dict');
+        if (!pagesPane || !dictPane) return;
+
+        var isDict = (which === 'dict');
+        pagesPane.classList.toggle('hidden', isDict);
+        dictPane.classList.toggle('hidden', !isDict);
+
+        if (pagesBtn) {
+            pagesBtn.classList.toggle('btn-primary', !isDict);
+            pagesBtn.classList.toggle('btn-ghost', isDict);
+        }
+        if (dictBtn) {
+            dictBtn.classList.toggle('btn-primary', isDict);
+            dictBtn.classList.toggle('btn-ghost', !isDict);
+        }
+
+        /* Словарь грузим при первом открытии блока, а не вместе со вкладкой:
+           он большой, и владельцу, который правит одну надпись, он не нужен. */
+        if (isDict && !state.textsDict) loadTextsDict();
+    }
+
+    /* --- 14.9 Подключение обработчиков ------------------------------------- */
+
+    function initTextsTab() {
+        /* --- Общие элементы --- */
+        var reload = $('#texts-reload');
+        if (reload) {
+            reload.addEventListener('click', function () {
+                if (state.textsDict) {
+                    loadTextsDict();
+                }
+                if (!state.texts) {
+                    var sel0 = $('#texts-page');
+                    loadTexts(sel0 ? sel0.value : 'index', false);
+                    return;
+                }
+                loadTexts(state.texts.page, true);
+            });
+        }
+
+        var blockPages = $('#texts-block-pages');
+        if (blockPages) blockPages.addEventListener('click', function () { showTextsBlock('pages'); });
+
+        var blockDict = $('#texts-block-dict');
+        if (blockDict) blockDict.addEventListener('click', function () { showTextsBlock('dict'); });
+
+        /* --- Блок «Тексты на страницах» --- */
+        var pageSel = $('#texts-page');
+        if (pageSel) {
+            pageSel.addEventListener('change', function () {
+                textsLastPage = pageSel.value;
+                state.texts = null;
+                state.textsEditing = null;
+                loadTexts(pageSel.value, false);
+            });
+        }
+
+        var zoneSel = $('#texts-zone');
+        if (zoneSel) {
+            zoneSel.addEventListener('change', function () {
+                if (!state.texts) return;
+                state.texts.filter.zone = zoneSel.value;
+                renderTextsList();
+            });
+        }
+
+        var kindSel = $('#texts-kind');
+        if (kindSel) {
+            kindSel.addEventListener('change', function () {
+                if (!state.texts) return;
+                state.texts.filter.kind = kindSel.value;
+                renderTextsList();
+            });
+        }
+
+        var search = $('#texts-search');
+        if (search) {
+            search.addEventListener('input', function () {
+                if (!state.texts) return;
+                state.texts.filter.q = search.value;
+                renderTextsList();
+            });
+        }
+
+        /* Клик по строке открывает её в форме. Делегирование: список
+           перерисовывается, отдельные обработчики бы потерялись. */
+        var list = $('#texts-list');
+        if (list) {
+            list.addEventListener('click', function (e) {
+                var row = e.target.closest ? e.target.closest('[data-text-key]') : null;
+                if (!row) return;
+                openTextEditor(row.getAttribute('data-text-key'));
+            });
+        }
+
+        var editorInput = $('#texts-editor-input');
+        if (editorInput) {
+            editorInput.addEventListener('input', function () {
+                if (!state.textsEditing) return;
+                state.textsEditing.draft = editorInput.value;
+                updateTextsCounter();
+            });
+            editorInput.addEventListener('keydown', function (e) {
+                /* Ctrl+Enter — сохранить, как в остальных вкладках. */
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    saveTextEdit(false);
+                }
+            });
+        }
+
+        var save = $('#texts-save');
+        if (save) save.addEventListener('click', function () { saveTextEdit(false); });
+
+        var saveNext = $('#texts-save-next');
+        if (saveNext) saveNext.addEventListener('click', function () { saveTextEdit(true); });
+
+        var cancel = $('#texts-cancel');
+        if (cancel) {
+            cancel.addEventListener('click', function () {
+                state.textsEditing = null;
+                renderTextsList();
+                renderTextsEditor();
+            });
+        }
+
+        var openPage = $('#texts-editor-open');
+        if (openPage) {
+            openPage.addEventListener('click', function () {
+                var url = openPage.getAttribute('data-url');
+                if (url) window.open(url, '_blank', 'noopener');
+            });
+        }
+
+        /* --- Блок «Ключи словаря» --- */
+        var dictSearch = $('#texts-dict-search');
+        if (dictSearch) {
+            dictSearch.addEventListener('input', function () {
+                if (!state.textsDict) return;
+                state.textsDict.filter.q = dictSearch.value;
+                renderTextsDictList();
+            });
+        }
+
+        var dictSection = $('#texts-dict-section');
+        if (dictSection) {
+            dictSection.addEventListener('change', function () {
+                if (!state.textsDict) return;
+                state.textsDict.filter.section = dictSection.value;
+                renderTextsDictList();
+            });
+        }
+
+        var dictList = $('#texts-dict-list');
+        if (dictList) {
+            dictList.addEventListener('click', function (e) {
+                var row = e.target.closest ? e.target.closest('[data-text-key]') : null;
+                if (!row) return;
+                openTextsDictKey(row.getAttribute('data-text-key'));
+            });
+        }
+
+        var dictAr = $('#texts-dict-editor-ar');
+        if (dictAr) {
+            dictAr.addEventListener('input', function () {
+                if (!state.textsDictEditing) return;
+                state.textsDictEditing.draftAr = dictAr.value;
+            });
+        }
+
+        var dictEn = $('#texts-dict-editor-en');
+        if (dictEn) {
+            dictEn.addEventListener('input', function () {
+                if (!state.textsDictEditing) return;
+                state.textsDictEditing.draftEn = dictEn.value;
+            });
+            dictEn.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    saveTextsDictEdit();
+                }
+            });
+        }
+
+        var dictSave = $('#texts-dict-save');
+        if (dictSave) dictSave.addEventListener('click', function () { saveTextsDictEdit(); });
+
+        var dictCancel = $('#texts-dict-cancel');
+        if (dictCancel) {
+            dictCancel.addEventListener('click', function () {
+                state.textsDictEditing = null;
+                renderTextsDictList();
+                renderTextsDictEditor();
+            });
+        }
+
+        /* Подпись о том, где правятся тексты из файлов товаров и новостей. */
+        var note = $('#texts-source-note');
+        if (note) note.classList.remove('hidden');
     }
 
     /* ========================================================================
